@@ -65,7 +65,7 @@ const registrationSchema = new mongoose.Schema(
     paymentMethod: {
       type: String,
       default: 'Free',
-      enum: ['Free', 'UPI / QR', 'Debit/Credit Card', 'Net Banking', 'Campus Wallet'],
+      trim: true,
     },
     paymentStatus: {
       type: String,
