@@ -1,220 +1,279 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import {
+  Calendar,
+  Ticket,
+  PlusCircle,
+  Shield,
+  User,
+  LogOut,
+  Menu,
+  X,
+  Sparkles,
+  LayoutDashboard,
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { Shield, PlusCircle, Search, LayoutDashboard, LogOut, LogIn, Menu, X, ShieldCheck } from 'lucide-react';
 
-export const Navbar = () => {
-  const { user, logout, isAdmin } = useAuth();
+const Navbar = () => {
+  const { user, logout, isOrganizer, isAdmin } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/');
+    setMobileMenuOpen(false);
   };
 
+  const isActive = (path) => location.pathname === path;
+
   return (
-    <header
-      style={{
-        backgroundColor: '#ffffff',
-        borderBottom: '1px solid var(--gray-200)',
-        position: 'sticky',
-        top: 0,
-        zIndex: 100,
-        boxShadow: 'var(--shadow-sm)',
-      }}
-    >
-      <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '4.25rem' }}>
-        {/* Brand Logo */}
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
-          <div
-            style={{
-              width: '2.5rem',
-              height: '2.5rem',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'var(--primary)',
-              color: '#ffffff',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Shield size={22} />
-          </div>
-          <div>
-            <div style={{ fontWeight: 800, fontSize: '1.1rem', color: 'var(--gray-900)', lineHeight: 1.1 }}>
-              Campus Lost & Found
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo & College Brand */}
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-md shadow-indigo-100 group-hover:scale-105 transition">
+              <Calendar className="w-5 h-5" />
             </div>
-            <div style={{ fontSize: '0.725rem', color: 'var(--primary)', fontWeight: 600 }}>
-              Sahrdaya College of Engineering & Technology
-            </div>
-          </div>
-        </Link>
-
-        {/* Desktop Navigation */}
-        <nav style={{ display: 'none', alignItems: 'center', gap: '1.5rem' }} className="md:flex">
-          <Link to="/" style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--gray-700)' }}>
-            Home
-          </Link>
-          <Link to="/items" style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--gray-700)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-            <Search size={16} /> Browse Items
-          </Link>
-          <Link to="/report" style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-            <PlusCircle size={16} /> Report Item
-          </Link>
-
-          {user && (
-            <Link to="/dashboard" style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--gray-700)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-              <LayoutDashboard size={16} /> Dashboard
-            </Link>
-          )}
-
-          {isAdmin && (
-            <Link
-              to="/admin"
-              className="badge"
-              style={{
-                backgroundColor: 'var(--warning-bg)',
-                color: 'var(--warning)',
-                border: '1px solid var(--warning-border)',
-                padding: '0.35rem 0.65rem',
-                fontSize: '0.75rem',
-              }}
-            >
-              <ShieldCheck size={14} /> Admin Console
-            </Link>
-          )}
-        </nav>
-
-        {/* Auth Actions (Desktop) */}
-        <div style={{ display: 'none', alignItems: 'center', gap: '0.75rem' }} className="md:flex">
-          {user ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <div style={{ textAlign: 'right', lineHeight: 1.2 }}>
-                <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--gray-900)' }}>
-                  {user.name}
-                </div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--gray-500)' }}>
-                  {user.role === 'admin' ? 'Administrator' : user.role === 'security_staff' ? 'Campus Security' : 'Student'}
-                </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="font-extrabold text-gray-900 tracking-tight text-lg">
+                  Sahrdaya <span className="text-indigo-600">EventHub</span>
+                </span>
+                <span className="bg-indigo-50 text-indigo-700 text-[10px] font-bold px-1.5 py-0.5 rounded border border-indigo-200">
+                  SCET
+                </span>
               </div>
-              <button
-                onClick={handleLogout}
-                className="btn btn-secondary btn-sm"
-                title="Log out of account"
-              >
-                <LogOut size={15} /> Logout
-              </button>
+              <p className="text-[11px] text-gray-400 font-medium leading-none">
+                Campus Events & Digital Passes
+              </p>
             </div>
-          ) : (
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <Link to="/login" className="btn btn-secondary btn-sm">
-                <LogIn size={15} /> Sign In
-              </Link>
-              <Link to="/register" className="btn btn-primary btn-sm">
-                Register
-              </Link>
-            </div>
-          )}
-        </div>
+          </Link>
 
-        {/* Mobile menu toggle button */}
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'none',
-            border: 'none',
-            color: 'var(--gray-700)',
-            cursor: 'pointer',
-          }}
-          className="md:none"
-          aria-label="Toggle navigation menu"
-        >
-          {mobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
-        </button>
+          {/* Desktop Navigation Links */}
+          <nav className="hidden md:flex items-center gap-1">
+            <Link
+              to="/"
+              className={`px-3 py-2 rounded-lg text-sm font-semibold transition ${
+                isActive('/')
+                  ? 'bg-indigo-50 text-indigo-700'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              Explore Events
+            </Link>
+
+            {user && (
+              <Link
+                to="/my-passes"
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold transition ${
+                  isActive('/my-passes')
+                    ? 'bg-indigo-50 text-indigo-700'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                <Ticket className="w-4 h-4 text-indigo-500" />
+                My Passes
+              </Link>
+            )}
+
+            {isOrganizer && (
+              <>
+                <Link
+                  to="/organizer/dashboard"
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold transition ${
+                    isActive('/organizer/dashboard')
+                      ? 'bg-indigo-50 text-indigo-700'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                >
+                  <LayoutDashboard className="w-4 h-4 text-amber-500" />
+                  Organizer Hub
+                </Link>
+
+                <Link
+                  to="/events/create"
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold transition ${
+                    isActive('/events/create')
+                      ? 'bg-indigo-50 text-indigo-700'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                >
+                  <PlusCircle className="w-4 h-4 text-emerald-500" />
+                  Post Event
+                </Link>
+              </>
+            )}
+
+            {isAdmin && (
+              <Link
+                to="/admin/dashboard"
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold transition ${
+                  isActive('/admin/dashboard')
+                    ? 'bg-indigo-50 text-indigo-700'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                <Shield className="w-4 h-4 text-purple-600" />
+                Admin
+              </Link>
+            )}
+          </nav>
+
+          {/* Desktop Right Side: Auth buttons / User Profile */}
+          <div className="hidden md:flex items-center gap-3">
+            {user ? (
+              <div className="flex items-center gap-3">
+                <div className="text-right">
+                  <div className="flex items-center gap-1.5 justify-end">
+                    <span className="text-sm font-bold text-gray-900 leading-tight">
+                      {user.name}
+                    </span>
+                    <span
+                      className={`text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider ${
+                        user.role === 'admin'
+                          ? 'bg-purple-100 text-purple-700'
+                          : user.role === 'organizer'
+                          ? 'bg-amber-100 text-amber-700'
+                          : 'bg-blue-100 text-blue-700'
+                      }`}
+                    >
+                      {user.role}
+                    </span>
+                  </div>
+                  <span className="text-[11px] text-gray-400 block leading-tight">
+                    {user.clubName || user.department}
+                  </span>
+                </div>
+
+                <button
+                  onClick={handleLogout}
+                  title="Sign Out"
+                  className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Link
+                  to="/login"
+                  className="px-4 py-2 text-sm font-semibold text-gray-700 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/register"
+                  className="px-4 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm shadow-indigo-200 transition"
+                >
+                  Register
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* Mobile Menu Button */}
+          <div className="flex md:hidden">
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition"
+              aria-label="Toggle Navigation Menu"
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div
-          style={{
-            backgroundColor: '#ffffff',
-            borderTop: '1px solid var(--gray-200)',
-            padding: '1rem 1.25rem',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '1rem',
-          }}
-        >
+        <div className="md:hidden border-t border-gray-200 bg-white px-4 pt-3 pb-6 space-y-2">
+          {user && (
+            <div className="p-3 bg-gray-50 rounded-xl mb-3 border border-gray-100">
+              <div className="font-bold text-gray-900 text-sm">{user.name}</div>
+              <div className="text-xs text-gray-500">{user.email}</div>
+              <span className="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-100 text-indigo-700 uppercase">
+                {user.role}
+              </span>
+            </div>
+          )}
+
           <Link
             to="/"
             onClick={() => setMobileMenuOpen(false)}
-            style={{ fontWeight: 600, color: 'var(--gray-800)', padding: '0.5rem 0' }}
+            className="flex items-center gap-2 p-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50"
           >
-            Home
+            <Calendar className="w-4 h-4 text-indigo-600" />
+            Explore Events
           </Link>
-          <Link
-            to="/items"
-            onClick={() => setMobileMenuOpen(false)}
-            style={{ fontWeight: 600, color: 'var(--gray-800)', padding: '0.5rem 0' }}
-          >
-            Browse Campus Items
-          </Link>
-          <Link
-            to="/report"
-            onClick={() => setMobileMenuOpen(false)}
-            style={{ fontWeight: 600, color: 'var(--primary)', padding: '0.5rem 0' }}
-          >
-            + Report Lost or Found Item
-          </Link>
+
           {user && (
             <Link
-              to="/dashboard"
+              to="/my-passes"
               onClick={() => setMobileMenuOpen(false)}
-              style={{ fontWeight: 600, color: 'var(--gray-800)', padding: '0.5rem 0' }}
+              className="flex items-center gap-2 p-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50"
             >
-              My Dashboard
+              <Ticket className="w-4 h-4 text-indigo-600" />
+              My Digital Passes
             </Link>
           )}
+
+          {isOrganizer && (
+            <>
+              <Link
+                to="/organizer/dashboard"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-2 p-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                <LayoutDashboard className="w-4 h-4 text-amber-500" />
+                Organizer Hub
+              </Link>
+              <Link
+                to="/events/create"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-2 p-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                <PlusCircle className="w-4 h-4 text-emerald-500" />
+                Publish Event
+              </Link>
+            </>
+          )}
+
           {isAdmin && (
             <Link
-              to="/admin"
+              to="/admin/dashboard"
               onClick={() => setMobileMenuOpen(false)}
-              style={{ fontWeight: 600, color: 'var(--warning)', padding: '0.5rem 0' }}
+              className="flex items-center gap-2 p-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50"
             >
+              <Shield className="w-4 h-4 text-purple-600" />
               Admin Console
             </Link>
           )}
 
-          <div style={{ borderTop: '1px solid var(--gray-200)', paddingTop: '1rem' }}>
+          <div className="pt-3 border-t border-gray-100">
             {user ? (
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>{user.name}</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--gray-500)' }}>{user.email}</div>
-                </div>
-                <button onClick={handleLogout} className="btn btn-secondary btn-sm">
-                  Logout
-                </button>
-              </div>
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center justify-center gap-2 p-2.5 rounded-lg text-sm font-semibold text-red-600 bg-red-50 hover:bg-red-100 transition"
+              >
+                <LogOut className="w-4 h-4" />
+                Sign Out
+              </button>
             ) : (
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <div className="grid grid-cols-2 gap-2">
                 <Link
                   to="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="btn btn-secondary btn-sm"
-                  style={{ flex: 1 }}
+                  className="flex items-center justify-center p-2.5 rounded-lg text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition"
                 >
                   Sign In
                 </Link>
                 <Link
                   to="/register"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="btn btn-primary btn-sm"
-                  style={{ flex: 1 }}
+                  className="flex items-center justify-center p-2.5 rounded-lg text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition"
                 >
                   Register
                 </Link>

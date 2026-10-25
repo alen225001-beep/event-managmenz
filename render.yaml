@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: sahrdaya-eventhub
+    env: node
+    plan: free
+    buildCommand: npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        value: mongodb+srv://albinpaul252007_db_user:albin%40123@cluster0.7cndfpq.mongodb.net/sahrdaya-eventhub?retryWrites=true&w=majority
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d

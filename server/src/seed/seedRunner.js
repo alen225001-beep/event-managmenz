@@ -1,86 +1,129 @@
-const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const { connectDB, disconnectDB } = require('../config/db');
-const User = require('../models/User');
-const Item = require('../models/Item');
-const Claim = require('../models/Claim');
-const { seedUsers, getSeedItems } = require('./seedData');
+const path = require('path');
+const mongoose = require('mongoose');
 
+// Load environment variables
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 dotenv.config();
 
+const { connectDB, disconnectDB } = require('../config/db');
+const User = require('../models/User');
+const Event = require('../models/Event');
+const Registration = require('../models/Registration');
+const { users, events } = require('./seedData');
+
 const runSeed = async () => {
+  console.log('\n======================================================');
+  console.log('🌱 SAHRDAYA CAMPUS EVENTHUB - SEED DATA RUNNER');
+  console.log('Student: Alen (alen225001@sahrdaya.ac.in)');
+  console.log('Institution: Sahrdaya College of Engineering & Technology');
+  console.log('======================================================\n');
+
   try {
-    console.log('[Seed] Connecting to MongoDB...');
     await connectDB();
 
     console.log('[Seed] Clearing existing collections...');
-    await Promise.all([
-      User.deleteMany({}),
-      Item.deleteMany({}),
-      Claim.deleteMany({}),
-    ]);
+    await User.deleteMany({});
+    await Event.deleteMany({});
+    await Registration.deleteMany({});
+    console.log('✅ Collections cleared.');
 
-    console.log('[Seed] Inserting users...');
+    console.log('[Seed] Seeding college users...');
     const createdUsers = [];
-    for (const u of seedUsers) {
-      const user = await User.create(u);
-      createdUsers.push(user);
+    for (const u of users) {
+      const created = await User.create(u);
+      createdUsers.push(created);
     }
+    console.log(`✅ ${createdUsers.length} users created.`);
 
-    const usersMap = {};
-    createdUsers.forEach((u) => {
-      usersMap[u.email] = u._id;
+    // Find organizers
+    const alenUser = createdUsers.find((u) => u.email === 'alen225001@sahrdaya.ac.in');
+    const iedcUser = createdUsers.find((u) => u.email === 'iedc@sahrdaya.ac.in');
+    const anjaliUser = createdUsers.find((u) => u.email === 'anjali@sahrdaya.ac.in');
+    const rahulUser = createdUsers.find((u) => u.email === 'rahul@sahrdaya.ac.in');
+
+    console.log('[Seed] Seeding campus events...');
+    const createdEvents = [];
+    for (let i = 0; i < events.length; i++) {
+      const e = events[i];
+      // Alternate organizers
+      const organizer = i % 2 === 0 ? alenUser : iedcUser;
+      const created = await Event.create({
+        ...e,
+        organizer: organizer._id,
+      });
+      createdEvents.push(created);
+    }
+    console.log(`✅ ${createdEvents.length} campus events created.`);
+
+    console.log('[Seed] Creating sample digital entry passes...');
+    // Anjali registers for TechNovus Hackathon & PyTorch Workshop
+    const pass1 = await Registration.create({
+      event: createdEvents[0]._id,
+      user: anjaliUser._id,
+      ticketCode: 'SHR-EVT-749201',
+      studentName: anjaliUser.name,
+      studentEmail: anjaliUser.email,
+      studentDepartment: anjaliUser.department,
+      studentId: anjaliUser.studentId,
+      phone: anjaliUser.phone,
+      status: 'confirmed',
     });
 
-    console.log(`[Seed] Seeded ${createdUsers.length} users successfully.`);
+    const pass2 = await Registration.create({
+      event: createdEvents[1]._id,
+      user: anjaliUser._id,
+      ticketCode: 'SHR-EVT-839210',
+      studentName: anjaliUser.name,
+      studentEmail: anjaliUser.email,
+      studentDepartment: anjaliUser.department,
+      studentId: anjaliUser.studentId,
+      phone: anjaliUser.phone,
+      status: 'attended',
+      attendedAt: new Date(),
+    });
 
-    console.log('[Seed] Inserting campus items...');
-    const seedItems = getSeedItems(usersMap);
-    const createdItems = await Item.insertMany(seedItems);
-    console.log(`[Seed] Seeded ${createdItems.length} campus items.`);
+    // Rahul registers for BME Seminar & Sargam Cultural Fest
+    const pass3 = await Registration.create({
+      event: createdEvents[3]._id,
+      user: rahulUser._id,
+      ticketCode: 'SHR-EVT-992014',
+      studentName: rahulUser.name,
+      studentEmail: rahulUser.email,
+      studentDepartment: rahulUser.department,
+      studentId: rahulUser.studentId,
+      phone: rahulUser.phone,
+      status: 'confirmed',
+    });
 
-    // Create a sample claim on the Casio calculator from student Alen
-    const calcItem = createdItems.find((i) => i.title.includes('Casio'));
-    const claimantUser = createdUsers.find(
-      (u) => u.email === 'alen225001@sahrdaya.ac.in'
-    );
+    const pass4 = await Registration.create({
+      event: createdEvents[2]._id,
+      user: rahulUser._id,
+      ticketCode: 'SHR-EVT-102938',
+      studentName: rahulUser.name,
+      studentEmail: rahulUser.email,
+      studentDepartment: rahulUser.department,
+      studentId: rahulUser.studentId,
+      phone: rahulUser.phone,
+      status: 'confirmed',
+    });
 
-    if (calcItem && claimantUser) {
-      await Claim.create({
-        item: calcItem._id,
-        claimant: claimantUser._id,
-        proofDescription:
-          'This is my calculator from Sahrdaya CS semester 4. On the back cover under the battery lid, there is a small blue star sticker with my initials "AM". Also, the cover has a small scratch next to the shift button.',
-        contactPhone: '+91 98470 12345',
-        status: 'PENDING',
-      });
-      console.log('[Seed] Seeded sample ownership claim on Casio Calculator.');
-    }
-
-    console.log('\n=========================================');
-    console.log('🎉 SEED COMPLETED SUCCESSFULLY!');
-    console.log('Demo Credentials for Sahrdaya Campus Portal:');
-    console.log('1. Student (Alen):');
-    console.log('   Email:    alen225001@sahrdaya.ac.in');
-    console.log('   Password: password123');
-    console.log('2. Campus Security Desk:');
-    console.log('   Email:    security@sahrdaya.ac.in');
-    console.log('   Password: password123');
-    console.log('3. College Admin:');
-    console.log('   Email:    admin@sahrdaya.ac.in');
-    console.log('   Password: password123');
-    console.log('=========================================\n');
+    console.log('✅ Sample passes seeded successfully.\n');
+    console.log('======================================================');
+    console.log('🚀 SEEDING COMPLETED SUCCESSFULLY!');
+    console.log('Demo Accounts:');
+    console.log('1. Student Lead (Organizer): alen225001@sahrdaya.ac.in / password123');
+    console.log('2. College Admin:           admin@sahrdaya.ac.in / password123');
+    console.log('3. Student (Anjali):        anjali@sahrdaya.ac.in / password123');
+    console.log('4. Student (Rahul):         rahul@sahrdaya.ac.in / password123');
+    console.log('======================================================\n');
 
     await disconnectDB();
     process.exit(0);
   } catch (error) {
-    console.error('[Seed] Error seeding database:', error);
+    console.error('❌ Seeding failed with error:', error);
     process.exit(1);
   }
 };
 
-if (require.main === module) {
-  runSeed();
-}
-
-module.exports = runSeed;
+runSeed();

@@ -1,84 +1,90 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-
-// Components
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 
-// Pages
 import Home from './pages/Home';
-import ItemList from './pages/ItemList';
-import ItemDetails from './pages/ItemDetails';
-import CreateItem from './pages/CreateItem';
-import EditItem from './pages/EditItem';
-import Dashboard from './pages/Dashboard';
+import EventDetails from './pages/EventDetails';
+import CreateEvent from './pages/CreateEvent';
+import EditEvent from './pages/EditEvent';
+import MyPasses from './pages/MyPasses';
+import OrganizerDashboard from './pages/OrganizerDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import NotFound from './pages/NotFound';
 
-export const App = () => {
+function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <BrowserRouter>
+      <AuthProvider>
+        <div className="flex flex-col min-h-screen bg-slate-50 font-sans antialiased text-gray-900 selection:bg-indigo-500 selection:text-white">
           <Navbar />
-          <main style={{ flex: 1 }}>
+          <div className="flex-1">
             <Routes>
               {/* Public Routes */}
               <Route path="/" element={<Home />} />
-              <Route path="/items" element={<ItemList />} />
-              <Route path="/items/:id" element={<ItemDetails />} />
+              <Route path="/events/:id" element={<EventDetails />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
 
-              {/* Protected Authenticated Routes */}
+              {/* Student Protected Routes */}
               <Route
-                path="/report"
+                path="/my-passes"
                 element={
                   <ProtectedRoute>
-                    <CreateItem />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/items/:id/edit"
-                element={
-                  <ProtectedRoute>
-                    <EditItem />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/dashboard"
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
+                    <MyPasses />
                   </ProtectedRoute>
                 }
               />
 
-              {/* Protected Admin/Security Routes */}
+              {/* Club Organizer & Admin Protected Routes */}
               <Route
-                path="/admin"
+                path="/events/create"
                 element={
-                  <ProtectedRoute adminOnly={true}>
+                  <ProtectedRoute allowedRoles={['organizer', 'admin']}>
+                    <CreateEvent />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/events/:id/edit"
+                element={
+                  <ProtectedRoute allowedRoles={['organizer', 'admin']}>
+                    <EditEvent />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/organizer/dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={['organizer', 'admin']}>
+                    <OrganizerDashboard />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* College Admin Console */}
+              <Route
+                path="/admin/dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={['admin']}>
                     <AdminDashboard />
                   </ProtectedRoute>
                 }
               />
 
-              {/* 404 Route */}
+              {/* 404 Fallback */}
               <Route path="*" element={<NotFound />} />
             </Routes>
-          </main>
+          </div>
           <Footer />
         </div>
-      </Router>
-    </AuthProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
-};
+}
 
 export default App;

@@ -1,15 +1,25 @@
 {
-  "name": "campus-lost-and-found-server",
+  "name": "sahrdaya-eventhub-server",
   "version": "1.0.0",
-  "description": "Backend API for Campus Lost and Found System - ICTAK MERN Project",
+  "description": "Backend API for Sahrdaya Campus Event & Ticket/Pass Booking Portal - ICTAK MERN Project",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "seed": "node src/seed/seedRunner.js",
-    "test": "node tests/api.test.js"
+    "test": "NODE_ENV=test node tests/api.test.js"
   },
-  "keywords": ["mern", "express", "mongodb", "lost-and-found", "ictak", "sahrdaya"],
+  "keywords": [
+    "mern",
+    "express",
+    "mongodb",
+    "events",
+    "booking",
+    "pass",
+    "ticket",
+    "ictak",
+    "sahrdaya"
+  ],
   "author": "Alen <alen225001@sahrdaya.ac.in>",
   "license": "ISC",
   "dependencies": {

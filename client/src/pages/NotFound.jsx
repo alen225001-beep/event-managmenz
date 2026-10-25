@@ -1,45 +1,24 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { HelpCircle, ArrowLeft } from 'lucide-react';
+import { CalendarX, Home } from 'lucide-react';
 
-export const NotFound = () => {
+const NotFound = () => {
   return (
-    <div
-      className="container"
-      style={{
-        padding: '5rem 1rem',
-        textAlign: 'center',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}
-    >
-      <div
-        style={{
-          width: '4.5rem',
-          height: '4.5rem',
-          borderRadius: '50%',
-          backgroundColor: 'var(--danger-bg)',
-          color: 'var(--danger)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginBottom: '1.5rem',
-        }}
-      >
-        <HelpCircle size={36} />
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center py-16 px-4 text-center">
+      <div className="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-3xl flex items-center justify-center mb-4 shadow-sm border border-indigo-100">
+        <CalendarX className="w-8 h-8" />
       </div>
-      <h1 style={{ fontSize: '3rem', fontWeight: 800, color: 'var(--gray-900)', lineHeight: 1 }}>
-        404
-      </h1>
-      <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--gray-700)', margin: '0.75rem 0' }}>
-        Page Not Found
-      </h2>
-      <p style={{ color: 'var(--gray-500)', maxWidth: '420px', marginBottom: '2rem' }}>
-        The page you are looking for does not exist or may have been moved.
+      <h1 className="text-4xl font-black text-gray-900 mb-2">404</h1>
+      <h2 className="text-xl font-bold text-gray-800 mb-2">Campus Page Not Found</h2>
+      <p className="text-sm text-gray-500 max-w-sm mb-6">
+        The campus event, entry pass, or console page you requested could not be located on Sahrdaya EventHub.
       </p>
-      <Link to="/" className="btn btn-primary">
-        <ArrowLeft size={16} /> Return to Campus Home
+      <Link
+        to="/"
+        className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white text-xs font-bold rounded-xl hover:bg-indigo-700 transition shadow-sm"
+      >
+        <Home className="w-4 h-4" />
+        Return to Campus Events Feed
       </Link>
     </div>
   );

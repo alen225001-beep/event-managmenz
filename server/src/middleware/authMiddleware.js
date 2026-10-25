@@ -13,7 +13,7 @@ const protect = async (req, res, next) => {
       token = req.headers.authorization.split(' ')[1];
       const decoded = jwt.verify(
         token,
-        process.env.JWT_SECRET || 'sahrdaya_campus_lost_and_found_secret_key_2026'
+        process.env.JWT_SECRET || 'sahrdaya_campus_eventhub_secret_key_2026'
       );
 
       // Attach user to request, excluding password
@@ -29,7 +29,7 @@ const protect = async (req, res, next) => {
       if (!req.user.isActive) {
         return res.status(403).json({
           success: false,
-          message: 'Your account has been deactivated. Please contact campus security.',
+          message: 'Your account has been deactivated. Please contact campus admin.',
         });
       }
 
@@ -51,7 +51,7 @@ const protect = async (req, res, next) => {
   }
 };
 
-// Authorize roles (e.g., admin, security_staff)
+// Authorize roles (e.g., admin, organizer)
 const authorize = (...roles) => {
   return (req, res, next) => {
     if (!req.user || !roles.includes(req.user.role)) {

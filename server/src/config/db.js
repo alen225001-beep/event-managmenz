@@ -1,46 +1,46 @@
 const mongoose = require('mongoose');
 
-let mongoMemoryServer = null;
-
 const connectDB = async () => {
-  const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/campus_lost_and_found';
-  
+  const uri =
+    process.env.MONGODB_URI ||
+    process.env.MONGO_URI ||
+    'mongodb://localhost:27017/sahrdaya_eventhub';
+
   try {
     const conn = await mongoose.connect(uri, {
-      serverSelectionTimeoutMS: 2500, // fast failover if local mongo is down
+      serverSelectionTimeoutMS: 5000,
     });
-    console.log(`[Database] MongoDB Connected: ${conn.connection.host}`);
+    console.log(`[Database] MongoDB Connected: ${conn.connection.host} (${conn.connection.name})`);
     return conn;
   } catch (err) {
-    console.warn(`[Database] Could not connect to primary MongoDB URI (${uri}): ${err.message}`);
-    
-    // In development or test, try in-memory MongoDB fallback for instant zero-config setup
-    if (process.env.NODE_ENV !== 'production') {
+    console.warn(`[Database] Warning: Could not connect to MongoDB URI (${uri}): ${err.message}`);
+
+    // If development and in-memory server is desired as fallback
+    if (process.env.NODE_ENV === 'test') {
       try {
-        console.log('[Database] Initializing fallback in-memory MongoDB server for development...');
         const { MongoMemoryServer } = require('mongodb-memory-server');
-        mongoMemoryServer = await MongoMemoryServer.create();
-        const memoryUri = mongoMemoryServer.getUri();
-        const conn = await mongoose.connect(memoryUri);
-        console.log(`[Database] In-memory MongoDB Connected successfully: ${memoryUri}`);
+        const mongod = await MongoMemoryServer.create();
+        const memUri = mongod.getUri();
+        const conn = await mongoose.connect(memUri);
+        console.log(`[Database] In-memory test MongoDB connected: ${memUri}`);
         return conn;
       } catch (memErr) {
-        console.error('[Database] In-memory MongoDB failed to initialize:', memErr.message);
+        console.error('[Database] In-memory MongoDB failed:', memErr.message);
       }
     }
 
-    console.error('[Database] Fatal: Unable to connect to MongoDB. Check MONGODB_URI in your .env file.');
-    // Do not exit in test runners or when graceful startup is desired
     if (process.env.NODE_ENV === 'production') {
-      process.exit(1);
+      console.error('[Database] Fatal: Cannot start in production without valid MongoDB URI.');
+      // Do not crash immediately to allow Render healthcheck diagnostics if needed
     }
   }
 };
 
 const disconnectDB = async () => {
-  await mongoose.disconnect();
-  if (mongoMemoryServer) {
-    await mongoMemoryServer.stop();
+  try {
+    await mongoose.disconnect();
+  } catch (err) {
+    console.error('[Database] Disconnect error:', err.message);
   }
 };
 

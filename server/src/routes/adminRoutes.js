@@ -1,20 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const {
-  getAdminOverview,
+  getAdminStats,
   getAllUsers,
-  updateUserRole,
-  getAllClaims,
+  updateUserStatus,
 } = require('../controllers/adminController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 
-// All admin routes require authentication and admin/security_staff role
-router.use(protect);
-router.use(authorize('admin', 'security_staff'));
+router.use(protect, authorize('admin'));
 
-router.get('/overview', getAdminOverview);
+router.get('/stats', getAdminStats);
 router.get('/users', getAllUsers);
-router.patch('/users/:id/role', authorize('admin'), updateUserRole);
-router.get('/claims', getAllClaims);
+router.patch('/users/:id', updateUserStatus);
 
 module.exports = router;

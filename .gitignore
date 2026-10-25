@@ -1,28 +1,19 @@
 # Dependencies
 node_modules/
-.pnp
-.pnp.js
+client/node_modules/
+server/node_modules/
 
-# Testing and Coverage
-coverage/
-*.lcov
-
-# Production & Build outputs
-dist/
-build/
-
-# Environment variables (CRITICAL: Never commit secrets)
+# Environment files (never commit secrets)
 .env
 .env.local
-.env.development.local
-.env.test.local
-.env.production.local
-*.env
+.env.*.local
+server/.env
+client/.env
 
-# Exceptions: Allow .env.example files
-!.env.example
-!client/.env.example
-!server/.env.example
+# Build outputs
+client/dist/
+dist/
+build/
 
 # Logs
 npm-debug.log*
@@ -30,12 +21,8 @@ yarn-debug.log*
 yarn-error.log*
 *.log
 
-# Editor & OS files
+# OS & Editor
 .DS_Store
-.AppleDouble
-.LSOverride
 Thumbs.db
 .vscode/
 .idea/
-*.sublime-project
-*.sublime-workspace

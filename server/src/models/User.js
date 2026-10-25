@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, 'Please provide your full name'],
+      required: [true, 'Please provide full name'],
       trim: true,
       minlength: [2, 'Name must be at least 2 characters'],
       maxlength: [60, 'Name cannot exceed 60 characters'],
@@ -17,43 +17,52 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
       match: [
-        /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-        'Please provide a valid email address (e.g., name@sahrdaya.ac.in)',
+        /^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9.-]+\.)?sahrdaya\.ac\.in$|^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+        'Please provide a valid college email address',
       ],
-      index: true,
     },
     password: {
       type: String,
       required: [true, 'Please provide a password'],
-      minlength: [6, 'Password must be at least 6 characters long'],
-      select: false, // Do not return password by default in queries
+      minlength: [6, 'Password must be at least 6 characters'],
+      select: false,
     },
     role: {
       type: String,
-      enum: {
-        values: ['student', 'faculty', 'security_staff', 'admin'],
-        message: '{VALUE} is not a valid role',
-      },
+      enum: ['student', 'organizer', 'admin'],
       default: 'student',
+    },
+    department: {
+      type: String,
+      required: [true, 'Please select your academic department'],
+      enum: [
+        'Computer Science & Engineering',
+        'Biomedical Engineering',
+        'Electronics & Communication Engineering',
+        'Biotechnology',
+        'Civil Engineering',
+        'Electrical & Electronics Engineering',
+        'Artificial Intelligence & Data Science',
+        'General Administration',
+      ],
+      default: 'Computer Science & Engineering',
     },
     studentId: {
       type: String,
       trim: true,
-      default: '',
-    },
-    department: {
-      type: String,
-      trim: true,
-      default: 'Computer Science and Engineering',
+      default: function () {
+        return this.email ? this.email.split('@')[0] : '';
+      },
     },
     phone: {
       type: String,
       trim: true,
-      default: '',
+      default: '+91 94000 00000',
     },
-    avatar: {
+    clubName: {
       type: String,
-      default: '',
+      trim: true,
+      default: '', // e.g. "IEEE Sahrdaya SB", "IEDC", "CSI Student Chapter"
     },
     isActive: {
       type: Boolean,
@@ -65,7 +74,7 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-// Hash password using bcrypt before saving
+// Hash password before saving
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
     return next();
@@ -75,7 +84,7 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-// Compare password method
+// Compare candidate password
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };

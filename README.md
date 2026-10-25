@@ -1,381 +1,288 @@
-# Campus Lost & Found System
-**MERN Stack Full Stack Development Project**  
-**Institution:** Sahrdaya College of Engineering & Technology, Kodakara, Thrissur, Kerala  
+# Sahrdaya EventHub: Campus Event & Digital Ticket/Pass Booking Portal
+**MERN Stack Full Stack Application Development Project**  
+**Institution:** Sahrdaya College of Engineering & Technology (SCET), Kodakara, Thrissur, Kerala  
 **Student:** Alen  
-**Email:** `alen225001@sahrdaya.ac.in`  
+**College Email:** `alen225001@sahrdaya.ac.in`  
 **Academy:** Information & Communication Technology Academy of Kerala (ICTAK)  
 
 ---
 
 ## 1. Project Overview & Problem Statement
 
-### Problem Statement
-On busy college campuses like Sahrdaya, hundreds of personal and academic belongings (student ID cards, Casio calculators, lab records, bike keys, chargers, watches, and bags) are misplaced daily. The absence of a centralized digital lost-and-found system leads to chaotic WhatsApp group spam, unclaimed lost property languishing in security drawers, and vulnerabilities where items are claimed fraudulently without ownership verification.
+### 1.1 Problem Statement
+Across higher education institutions like Sahrdaya College of Engineering & Technology, dozens of academic workshops, inter-collegiate hackathons, IEEE symposiums, cultural fests (Sargam), and sports tournaments are conducted throughout the semester. However:
+1. **Scattered Information**: Event announcements are dispersed across unofficial WhatsApp groups, printed notice boards, and departmental Instagram pages, causing students to miss key deadlines.
+2. **Chaotic Registrations**: Organizers use disparate Google Forms with no automatic seat capacity capping, resulting in double-bookings, overcrowded computer labs, or empty venues.
+3. **Absence of Entrance Verification**: Without a verifiable digital pass, admission desks at auditoriums and laboratories face fraudulent entries, manual paper tick-sheets, and long entry queues.
 
-**Campus Lost & Found** provides a secure, role-based digital repository and ownership verification platform tailored for the Sahrdaya College campus community.
+### 1.2 Solution: Sahrdaya EventHub
+**Sahrdaya EventHub** provides a centralized, role-based MERN web platform where:
+- **Students** discover campus activities, filter by category/date, and reserve free entry passes with unique digital barcodes (`SHR-EVT-XXXXXX`).
+- **Club Organizers (IEEE, CSI, IEDC, NSS)** publish campus workshops, enforce seating capacity limits, download attendee rosters, and verify arrivals with 1-click check-in.
+- **College Administrators** monitor cross-departmental engagement, category distribution, and attendance rates.
 
 ---
 
-## 2. Project Definition & Specifications (ICTAK Section 2)
+## 2. Project Specification & Requirements (ICTAK Guidelines)
 
 ### 2.1 Target Users & Roles
-| Role | Permissions & Scope |
+| Role | Permissions & Responsibilities |
 | :--- | :--- |
-| **Student** | Report lost items, log found items, browse campus feed with filters, submit ownership verification claims with proof statements, manage personal reports and claims in dashboard. |
-| **Faculty & Staff** | Report lost/found departmental materials, review verification claims for items found in departmental laboratories. |
-| **Campus Security Desk** | Act as physical custodian of high-value found items (gate token tracking), review claimant proofs, approve physical handovers, and update item status to `RETURNED`. |
-| **College Administrator** | System-wide oversight, manage all campus items, resolve claim disputes, monitor recovery rates, manage user roles and permissions. |
+| **Student (Attendee)** | Browse campus events, search/filter by category/club, reserve admission passes, access personal digital ticket wallet ("My Passes"), print digital boarding passes, and cancel registrations before deadline. |
+| **Club Organizer** | (e.g. IEEE Sahrdaya SB, CSI, IEDC, NSS Leads) Publish events, define venue and max seating capacity, manage event lifecycle (`upcoming`, `completed`, `cancelled`), view registered attendee roster, and verify student check-ins at hall entrance. |
+| **College Administrator** | System-wide governance, track campus engagement analytics, view category distribution and club leaderboards, promote students to club organizers, manage user accounts. |
 
 ---
 
 ### 2.2 MVP Scope
-- **Must Have (MVP)**:
-  - User Registration & Login with JWT authentication and bcrypt password hashing.
-  - Dedicated college email validation (`@sahrdaya.ac.in`).
-  - Report Lost Item with title, category, campus location spot, date, description, and tags.
-  - Log Found Item with physical safe custody location (e.g., Main Security Gate Desk).
-  - Search & Filter Feed (by type: LOST/FOUND, category, location keyword, status).
-  - Two-tier Claim Verification Workflow: Claimant submits secret identifying features; reporter/security reviews and approves or rejects claim.
-  - User Dashboard: Track own reports and status of submitted claims.
-  - Security & Admin Console: Campus statistics, manage items, approve handovers, manage users.
-  - 4-State UI for every screen: Loading, Success, Empty, and Error states with retry capability.
-- **Later Enhancements**:
-  - Automated optical character recognition (OCR) for Sahrdaya student ID cards.
-  - Instant automated SMS/Email notifications on claim status change.
-  - QR-code generation for student equipment tagging.
+- **Must Have (Delivered)**:
+  - User Registration & Authentication with JWT and bcrypt password hashing.
+  - Sahrdaya College email domain validation (`@sahrdaya.ac.in`).
+  - Event Management: Title, category, venue, date, timing, capacity, banner image, hosting club, tags, description.
+  - Dynamic Seat Availability: Real-time calculation of remaining spots; automated "Sold Out" state when capacity is reached.
+  - Duplicate Booking Guard: Prevents multiple registrations by the same student for the same event.
+  - Digital Ticket Pass: Generates unique pass code (`SHR-EVT-XXXXXX`), student snapshot, barcode/QR simulator, and print-ready layout.
+  - Organizer Entrance Roster: Real-time search by student name/ID/pass code and 1-click check-in verification.
+  - Admin Analytics: Total events, total passes issued, attendance rate, category distribution, and user role management.
+  - 4-State UI across all views: Loading, Success, Empty, and Error with retry.
+- **Future Enhancements**:
+  - Live QR-code camera scanner for mobile devices.
+  - Automated SMS and Email confirmation via Nodemailer / Twilio.
+  - Certificate generation for attended students.
 
 ---
 
 ### 2.3 User Stories & Acceptance Criteria
 
-#### Story 1: Report a Found Casio Calculator
-- **As a** student or security officer,
-- **I want to** log a found Casio scientific calculator with the specific campus room and custody desk,
-- **So that** the student who lost it can locate and claim it.
+#### Story 1: Student Books a Free Entry Pass for Hackathon
+- **As a** Sahrdaya student,
+- **I want to** reserve a seat for the TechNovus '26 Hackathon,
+- **So that** I receive a guaranteed spot and a verifiable digital pass.
 - **Acceptance Criteria**:
-  - Required fields (title, category, type, location, description) must be validated on both client and server.
-  - An empty title or missing location returns a 400 Bad Request error.
-  - After saving, the report appears immediately in the campus feed.
-  - Custody location defaults to "Main Security Gate Desk" for high security.
+  - Unauthenticated users clicking "Book Pass" are redirected to login.
+  - If seats are available, clicking "Book Pass" atomically increments the event's `registeredCount` and creates a Registration document.
+  - The student is immediately presented with their printable digital boarding pass containing code `SHR-EVT-XXXXXX`.
+  - Re-attempting to register shows a friendly message indicating an active pass already exists.
 
-#### Story 2: Submit an Ownership Claim with Proof
-- **As a** student who lost an item,
-- **I want to** submit a claim describing unique distinguishing marks (e.g., sticker under battery lid, lockscreen photo),
-- **So that** the finder or security officer can verify my ownership without publicly revealing identifying marks.
+#### Story 2: Club Organizer Verifies Entrance Admission
+- **As an** IEEE club coordinator,
+- **I want to** search an attendee by their student ID or pass code and click "Check In",
+- **So that** only legitimate students enter the laboratory.
 - **Acceptance Criteria**:
-  - Claimant cannot submit a claim on an item they reported themselves.
-  - Claimant cannot submit duplicate active pending claims on the same item.
-  - Submitting a claim updates the item status to `CLAIM_PENDING`.
-  - Item reporter and security staff can review the claim proof and click "Approve" or "Reject".
-  - Approving a claim automatically updates the item to `RETURNED` and rejects other pending claims.
+  - Roster displays real-time attendance status (`Confirmed` vs `Attended`).
+  - Clicking "Check In" updates registration status to `attended` and records timestamp `attendedAt`.
+  - Attendance rate percentage updates live in the dashboard.
 
 ---
 
-### 2.4 Data Model
+## 3. Architecture & Data Model
 
+### 3.1 MERN Stack Flow
 ```
-+-------------------------------------------------------+
-|                        User                           |
-+-------------------------------------------------------+
-| _id: ObjectId                                         |
-| name: String (2-60 chars)                             |
-| email: String (unique, indexed, lowercase)            |
-| password: String (hashed via bcrypt, select: false)   |
-| role: 'student' | 'faculty' | 'security_staff' | 'admin'|
-| department: String                                    |
-| studentId: String (e.g., 'alen225001')                |
-| phone: String                                         |
-| isActive: Boolean (default: true)                     |
-| timestamps: createdAt, updatedAt                      |
-+-------------------------------------------------------+
-                          | 1
-                          |
-                          | has many reports
-                          v N
-+-------------------------------------------------------+
-|                        Item                           |
-+-------------------------------------------------------+
-| _id: ObjectId                                         |
-| title: String (max 120, indexed)                      |
-| description: String (max 1500)                        |
-| type: 'LOST' | 'FOUND' (indexed)                      |
-| category: 'ELECTRONICS' | 'ID_CARDS_DOCUMENTS' |      |
-|           'BOOKS_STATIONERY' | 'KEYS' |               |
-|           'CLOTHING_ACCESSORIES' | 'BAGS_WALLETS' |   |
-|           'SPORTS_EQUIPMENT' | 'OTHER'                |
-| status: 'REPORTED' | 'CLAIM_PENDING' |                |
-|         'RETURNED' | 'ARCHIVED'                       |
-| location: String (Campus building/room)               |
-| custodyLocation: String (e.g. Main Security Desk)     |
-| dateLostOrFound: Date                                 |
-| distinguishingMarks: String (Confidential)            |
-| reportedBy: ObjectId -> Ref User                      |
-| contactEmail: String                                  |
-| contactPhone: String                                  |
-| imageUrl: String                                      |
-| resolvedAt: Date                                      |
-| resolvedBy: ObjectId -> Ref User                      |
-| timestamps: createdAt, updatedAt                      |
-+-------------------------------------------------------+
-                          | 1
-                          |
-                          | receives claims
-                          v N
-+-------------------------------------------------------+
-|                        Claim                          |
-+-------------------------------------------------------+
-| _id: ObjectId                                         |
-| item: ObjectId -> Ref Item                            |
-| claimant: ObjectId -> Ref User                        |
-| proofDescription: String (min 10 chars, required)    |
-| status: 'PENDING' | 'APPROVED' | 'REJECTED'           |
-| contactPhone: String                                  |
-| reviewedBy: ObjectId -> Ref User                      |
-| reviewNotes: String                                   |
-| reviewedAt: Date                                      |
-| timestamps: createdAt, updatedAt                      |
-+-------------------------------------------------------+
++-------------------------------------------------------------------+
+|                        React 19 Frontend                          |
+|  (Vite, Tailwind CSS, Lucide Icons, React Router 7, Auth Context) |
++-------------------------------------------------------------------+
+                                  |
+                                  | HTTPS / REST (JSON) + JWT Bearer
+                                  v
++-------------------------------------------------------------------+
+|                     Node.js & Express API                         |
+|   (Auth Routes, Event Routes, Registration Routes, Admin Routes)  |
++-------------------------------------------------------------------+
+                                  |
+                                  | Mongoose ODM (Atomic operations)
+                                  v
++-------------------------------------------------------------------+
+|                   MongoDB Atlas Cloud Database                    |
+|      Collections: users, events, registrations (indexes & TTL)    |
++-------------------------------------------------------------------+
 ```
+
+### 3.2 Database Schema
+
+#### User Model (`User.js`)
+- `_id`: ObjectId
+- `name`: String (2-60 chars)
+- `email`: String (unique, indexed, validated `@sahrdaya.ac.in`)
+- `password`: String (hashed via bcryptjs, select: false)
+- `role`: Enum `['student', 'organizer', 'admin']` (default: `'student'`)
+- `department`: String (e.g. `'Computer Science & Engineering'`)
+- `studentId`: String (e.g. `'alen225001'`)
+- `phone`: String
+- `clubName`: String (e.g. `'IEEE Sahrdaya SB'`)
+- `isActive`: Boolean (default: true)
+
+#### Event Model (`Event.js`)
+- `_id`: ObjectId
+- `title`: String (indexed, max 120 chars)
+- `description`: String (max 3000 chars)
+- `category`: Enum `['Technical Workshop', 'Hackathon', 'Cultural Fest', 'National Seminar', 'Sports Tournament', 'Guest Lecture', 'Career & Placement', 'Other']`
+- `venue`: String (e.g. `'Decennial Hall, Main Block'`)
+- `date`: Date (indexed)
+- `time`: String (e.g. `'09:30 AM - 04:30 PM'`)
+- `registrationDeadline`: Date
+- `capacity`: Number (min 1, default 100)
+- `registeredCount`: Number (default 0)
+- `bannerImage`: String (URL)
+- `organizer`: ObjectId (ref: `User`)
+- `clubName`: String
+- `status`: Enum `['upcoming', 'ongoing', 'completed', 'cancelled']`
+- `ticketType`: Enum `['free', 'paid']`
+- `price`: Number (default 0)
+- `tags`: Array of Strings
+- Virtual: `spotsLeft` (`capacity - registeredCount`)
+
+#### Registration Model (`Registration.js`)
+- `_id`: ObjectId
+- `event`: ObjectId (ref: `Event`, indexed)
+- `user`: ObjectId (ref: `User`, indexed)
+- `ticketCode`: String (unique, e.g. `'SHR-EVT-749201'`)
+- `status`: Enum `['confirmed', 'attended', 'cancelled']`
+- `studentName`: String
+- `studentEmail`: String
+- `studentDepartment`: String
+- `studentId`: String
+- `registeredAt`: Date (default: Date.now)
+- `attendedAt`: Date
+- Unique Compound Index: `{ event: 1, user: 1 }` (prevents duplicate passes)
 
 ---
 
-### 2.5 API Contract (RESTful `/api`)
+## 4. API Endpoints Contract
 
-| Method | Endpoint | Description | Access | Success | Errors |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| `GET` | `/api/health` | Service health and info check | Public | `200 OK` | `500` |
-| `POST` | `/api/auth/register` | Register new campus account | Public | `201 Created` | `400, 409` |
-| `POST` | `/api/auth/login` | Authenticate user & get JWT token | Public | `200 OK` | `400, 401, 403` |
-| `GET` | `/api/auth/profile` | Get current user profile | Private | `200 OK` | `401, 404` |
-| `PUT` | `/api/auth/profile` | Update profile info | Private | `200 OK` | `400, 401` |
-| `GET` | `/api/items` | List items (pagination, filters, search) | Public | `200 OK` | `500` |
-| `GET` | `/api/items/stats` | Campus metrics & recovery percentage | Public | `200 OK` | `500` |
-| `GET` | `/api/items/:id` | Get item details | Public | `200 OK` | `404` |
-| `POST` | `/api/items` | Create lost or found report | Private | `201 Created` | `400, 401` |
-| `PUT` | `/api/items/:id` | Update item report | Owner/Admin | `200 OK` | `401, 403, 404` |
-| `DELETE` | `/api/items/:id` | Delete item report & related claims | Owner/Admin | `200 OK` | `401, 403, 404` |
-| `GET` | `/api/items/my/reports` | Get current user's reports | Private | `200 OK` | `401` |
-| `POST` | `/api/claims` | Submit ownership verification claim | Private | `201 Created` | `400, 401, 404, 409` |
-| `GET` | `/api/claims/my` | Get current user's submitted claims | Private | `200 OK` | `401` |
-| `GET` | `/api/claims/item/:itemId` | Get claims on an item | Owner/Admin | `200 OK` | `401, 403, 404` |
-| `PATCH` | `/api/claims/:id/status` | Approve or reject claim | Owner/Admin | `200 OK` | `400, 401, 403, 404` |
-| `GET` | `/api/admin/overview` | Admin metrics & category breakdown | Admin | `200 OK` | `401, 403` |
-| `GET` | `/api/admin/users` | List registered campus users | Admin | `200 OK` | `401, 403` |
-| `PATCH` | `/api/admin/users/:id/role`| Update user role or active status | Admin | `200 OK` | `401, 403, 404` |
-
----
-
-## 3. Project Architecture & Structure (ICTAK Section 3 & 4)
-
-```
-campus-lost-and-found/
-├── package.json               # Root scripts for client and server orchestration
-├── .gitignore                 # Excludes node_modules, .env, build artifacts
-├── README.md                  # Comprehensive documentation and guidelines
-│
-├── client/                    # React 19 Frontend (Vite)
-│   ├── index.html             # HTML entry with Sahrdaya typography
-│   ├── vite.config.js         # Vite configuration
-│   ├── package.json           # Frontend dependencies (React Router, Lucide, etc.)
-│   ├── .env.example           # Example frontend environment variables
-│   └── src/
-│       ├── main.jsx           # React DOM mounting
-│       ├── App.jsx            # Application layout, routes, protected routes
-│       ├── index.css          # Design system, cards, badges, modal, animations
-│       ├── components/
-│       │   ├── Navbar.jsx         # Navigation header with role badges & mobile drawer
-│       │   ├── Footer.jsx         # Sahrdaya institutional footer & student credits
-│       │   ├── ItemCard.jsx       # Reusable item card with status pills & tags
-│       │   ├── ClaimModal.jsx     # Ownership verification proof questionnaire
-│       │   ├── LoadingSpinner.jsx # Loading state indicator
-│       │   ├── EmptyState.jsx     # Empty state display with action buttons
-│       │   ├── ErrorMessage.jsx   # Error alert with retry action
-│       │   └── ProtectedRoute.jsx # Role and authentication route guard
-│       ├── pages/
-│       │   ├── Home.jsx           # Landing page with stats, search & 3-step SOP
-│       │   ├── ItemList.jsx       # Campus directory with search & category pills
-│       │   ├── ItemDetails.jsx    # Full item specifications & claims management
-│       │   ├── CreateItem.jsx     # Form to report Lost or Found belongings
-│       │   ├── EditItem.jsx       # Update report details or change status
-│       │   ├── Dashboard.jsx      # User profile, reported items & submitted claims
-│       │   ├── AdminDashboard.jsx # Security administration and dispute console
-│       │   ├── Login.jsx          # Sign In with 1-click Demo Account filler
-│       │   ├── Register.jsx       # Student/Staff registration form
-│       │   └── NotFound.jsx       # 404 page
-│       ├── context/
-│       │   └── AuthContext.jsx    # Global authentication & user state
-│       ├── hooks/
-│       │   └── useAuth.js         # Hook for accessing AuthContext
-│       └── services/
-│           ├── api.js             # Central fetch client with JWT injection
-│           ├── authService.js     # Auth & token persistence API calls
-│           ├── itemService.js     # Item CRUD & stats API calls
-│           ├── claimService.js    # Claim submission & status API calls
-│           └── adminService.js    # Administrator console API calls
-│
-└── server/                    # Express & Node.js API
-    ├── package.json           # Backend dependencies (express, mongoose, bcrypt, jwt)
-    ├── .env.example           # Example backend environment variables
-    ├── tests/
-    │   └── api.test.js        # Automated integration test suite (12 test cases)
-    └── src/
-        ├── server.js          # Express entry point, CORS, routes, health check
-        ├── config/
-        │   └── db.js          # Resilient Mongoose connection + memory fallback
-        ├── models/
-        │   ├── User.js        # User model with bcrypt pre-save hashing
-        │   ├── Item.js        # Item model with text search & compound indexes
-        │   └── Claim.js       # Claim verification model with proof details
-        ├── middleware/
-        │   ├── authMiddleware.js   # JWT protect and authorize middleware
-        │   └── errorMiddleware.js  # Centralized error handler (400, 401, 404, 409, 500)
-        ├── controllers/
-        │   ├── authController.js   # Register, login, profile management
-        │   ├── itemController.js   # CRUD, search, filter, pagination, stats
-        │   ├── claimController.js  # Submit claims, approve/reject workflow
-        │   └── adminController.js  # Admin metrics, audit items, manage users
-        ├── routes/
-        │   ├── authRoutes.js       # /api/auth
-        │   ├── itemRoutes.js       # /api/items
-        │   ├── claimRoutes.js      # /api/claims
-        │   └── adminRoutes.js      # /api/admin
-        └── seed/
-            ├── seedData.js         # Realistic Sahrdaya College demo data
-            └── seedRunner.js       # Database seeder execution script
-```
+| Method | Endpoint | Access | Purpose |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/auth/register` | Public | Register student or club organizer account |
+| `POST` | `/api/auth/login` | Public | Authenticate user & receive JWT token |
+| `GET` | `/api/auth/profile` | Private | Retrieve authenticated user profile |
+| `PUT` | `/api/auth/profile` | Private | Update user contact info |
+| `GET` | `/api/events` | Public | Search and filter campus events (pagination) |
+| `GET` | `/api/events/featured` | Public | Top spotlight events for homepage |
+| `GET` | `/api/events/:id` | Public/Auth | Full event details & user registration status |
+| `POST` | `/api/events` | Organizer/Admin | Publish new workshop or fest |
+| `PUT` | `/api/events/:id` | Organizer/Admin | Edit event details, timing, or venue |
+| `DELETE` | `/api/events/:id` | Organizer/Admin | Remove/cancel event |
+| `GET` | `/api/events/:id/attendees` | Organizer/Admin | View registered attendee roster |
+| `POST` | `/api/registrations/:eventId` | Student/Auth | Reserve free entry pass & generate ticket code |
+| `GET` | `/api/registrations/my-passes` | Student/Auth | Get student's digital passes wallet |
+| `GET` | `/api/registrations/ticket/:code` | Public | Verify validity of ticket pass |
+| `PATCH` | `/api/registrations/:id/cancel` | Student/Auth | Cancel reservation & restore available seat |
+| `PATCH` | `/api/registrations/:id/checkin` | Organizer/Admin | Check in attendee at hall entrance |
+| `GET` | `/api/admin/stats` | Admin | Campus engagement & category analytics |
+| `GET` | `/api/admin/users` | Admin | User directory and role list |
+| `PATCH` | `/api/admin/users/:id` | Admin | Promote user to organizer or toggle status |
+| `GET` | `/api/health` | Public | Server uptime & MongoDB connection health |
 
 ---
 
-## 4. Setup & Running Locally (ICTAK Appendix A)
+## 5. Security & Data Integrity
+
+1. **Password Encryption**: All passwords hashed using `bcryptjs` with salt factor 10. Passwords never returned in queries (`select: false`).
+2. **JWT Authorization**: Stateless authorization using JSON Web Tokens passed via `Authorization: Bearer <token>`.
+3. **Role-Based Access Control (RBAC)**: Custom `authorize(...roles)` middleware protects administrative and organizer operations.
+4. **CORS Hardening**: Configured with dynamic `origin: true` and credentials support to eliminate cross-origin request blocks in production and local development.
+5. **Atomic Seat Reservation**: Seat count updates performed using MongoDB `$inc` operators to eliminate race conditions.
+6. **Unique Compound Indexing**: MongoDB compound index `{ event: 1, user: 1 }` strictly forbids duplicate registrations.
+
+---
+
+## 6. Local Setup & Execution Guide
 
 ### Prerequisites
-- **Node.js**: v18+ (verified on v24.22.0)
-- **npm**: v9+ (verified on v11.19.1)
-- **Git**: v2+
+- Node.js (v18+)
+- npm (v9+)
+- MongoDB Atlas account or local MongoDB
 
-### Quick Start (Two Terminal Setup)
-
-#### Step 1: Install Dependencies
+### 1. Clone Repository & Install Dependencies
 ```bash
-# In project root:
-npm run install:all
+git clone https://github.com/<your-username>/sahrdaya-eventhub.git
+cd sahrdaya-eventhub
 
-# Or separately:
-cd server && npm install
-cd ../client && npm install
+# Install all root, server, and client dependencies
+npm --prefix server install
+npm --prefix client install
 ```
 
-#### Step 2: Environment Configuration
-Create `.env` in `server/` (copied from `server/.env.example`):
+### 2. Configure Environment Variables
+Create `server/.env`:
 ```env
-PORT=5000
+PORT=5001
 NODE_ENV=development
-MONGODB_URI=mongodb://localhost:27017/campus_lost_and_found
-JWT_SECRET=sahrdaya_campus_lost_and_found_secret_key_2026
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/sahrdaya-eventhub?retryWrites=true&w=majority
+JWT_SECRET=sahrdaya_campus_eventhub_secret_key_2026
 JWT_EXPIRES_IN=7d
 CLIENT_ORIGIN=http://localhost:5173
 ```
 
-Create `.env` in `client/` (copied from `client/.env.example`):
-```env
-VITE_API_URL=http://localhost:5000/api
+### 3. Seed Database with Realistic Sahrdaya Data
+```bash
+npm run seed
 ```
 
-#### Step 3: Seed Database with Sahrdaya Demo Data
+### 4. Run API Test Suite
 ```bash
-npm run seed --prefix server
+npm test
 ```
+*Executes all 8 integration test suites verifying auth, CRUD, capacity constraints, pass issuance, and check-ins.*
 
-#### Step 4: Run the Apps
-**Terminal 1 (Backend API):**
+### 5. Start Development Servers
 ```bash
-npm run dev --prefix server
-# Server starts on http://localhost:5000
-# Health check: http://localhost:5000/api/health
-```
+# Terminal 1: Backend API (runs on port 5001)
+npm run server
 
-**Terminal 2 (Frontend Client):**
-```bash
-npm run dev --prefix client
-# Client runs on http://localhost:5173
+# Terminal 2: React Frontend (runs on http://localhost:5173)
+npm run client
 ```
 
 ---
 
-## 5. Demo Credentials
+## 7. Demo Accounts for Evaluation & Viva
 
-The database seeder pre-configures accounts for testing:
-
-| Role | Email | Password | Description |
+| Account | Email | Password | Role & Purpose |
 | :--- | :--- | :--- | :--- |
-| **Student (Alen)** | `alen225001@sahrdaya.ac.in` | `password123` | Computer Science student; owns demo reports and active claims. |
-| **Campus Security Desk** | `security@sahrdaya.ac.in` | `password123` | Security staff managing physical custody of found items. |
-| **College Administrator** | `admin@sahrdaya.ac.in` | `password123` | Full access to the Admin Console. |
-| **Student (Sneha)** | `sneha.cs@sahrdaya.ac.in` | `password123` | Computer Science student with lost bike key report. |
-| **Student (Rahul)** | `rahul.bme@sahrdaya.ac.in` | `password123` | Biomedical student with found Titan watch and lost record. |
-
-*(Note: The login page provides 1-click autofill buttons for convenience!)*
+| **Student Lead (Alen)** | `alen225001@sahrdaya.ac.in` | `password123` | **Organizer**: Publish events, manage IEEE roster, check-in attendees |
+| **College Dean** | `admin@sahrdaya.ac.in` | `password123` | **Admin**: View campus statistics, category distribution, manage users |
+| **Student (Anjali)** | `anjali@sahrdaya.ac.in` | `password123` | **Student**: Has active pass for TechNovus & attended PyTorch workshop |
+| **Student (Rahul)** | `rahul@sahrdaya.ac.in` | `password123` | **Student**: Registered for BME Seminar & Sargam Cultural Fest |
 
 ---
 
-## 6. Testing & Quality Assurance (ICTAK Section 8)
+## 8. Deployment on Render & MongoDB Atlas
 
-Run the automated integration test suite:
-```bash
-npm test --prefix server
-```
-The test suite validates:
-1. `GET /api/health` - 200 OK and JSON health message.
-2. `POST /api/auth/register` - 201 Created and valid JWT token.
-3. `POST /api/auth/register` - 409 Conflict rejection for duplicate email.
-4. `POST /api/auth/login` - 200 OK authentication.
-5. `POST /api/auth/login` - 401 Unauthorized for incorrect password.
-6. `GET /api/auth/profile` - Protected Bearer token authentication.
-7. `POST /api/items` - 401 Unauthorized rejection when token is missing.
-8. `POST /api/items` - 201 Created item logging.
-9. `GET /api/items` - 200 OK with pagination, search, and category filter.
-10. `GET /api/items/stats` - 200 OK aggregate statistics.
-11. `PUT /api/items/:id` - 200 OK report update by authorized owner.
-12. `GET /api/admin/overview` - 403 Forbidden role defense against unauthorized students.
+1. **MongoDB Atlas**:
+   - Create cluster on MongoDB Atlas.
+   - Whitelist IP addresses: `0.0.0.0/0` (Network Access).
+   - Copy connection string into Render Environment Variables as `MONGODB_URI`.
+2. **Render Web Service**:
+   - Connect GitHub repository.
+   - Build Command: `npm run build`
+   - Start Command: `npm start`
+   - Health Check Path: `/api/health`
+   - Environment Variables:
+     - `NODE_ENV`: `production`
+     - `PORT`: `10000`
+     - `MONGODB_URI`: `<Atlas Connection String>`
+     - `JWT_SECRET`: `<Secret>`
+     - `JWT_EXPIRES_IN`: `7d`
 
 ---
 
-## 7. Security & Privacy Implementations (ICTAK Section 10)
-- **Password Protection**: Salted hash using `bcryptjs` (salt rounds: 10). Plain-text passwords are never stored, logged, or returned.
-- **JWT Authorization**: Cryptographically signed tokens with expiration (`7d`).
-- **Least Privilege Access**: Students cannot access `/api/admin/*` routes; users cannot modify items reported by others; claimants cannot approve their own claims.
-- **Sanitization & Validation**: Strong Mongoose schema constraints, email regex matching, and sanitized regex search against NoSQL injection.
-- **Centralized Error Handling**: Generic safe messages returned to clients; detailed stacks logged only on the server in development mode.
-- **Confidential Distinguishing Marks**: Identifying marks are kept confidential and exposed only to the reporter and campus security to prevent fraudulent claims.
+## 9. Viva Questions & Project Defense Guide
+
+**Q1: How does Sahrdaya EventHub prevent race conditions when two students book the last available seat simultaneously?**  
+*Answer:* The application uses atomic MongoDB update operations (`$inc: { registeredCount: 1 }`) combined with a unique compound index `{ event: 1, user: 1 }` on the `Registration` collection. The API checks `registeredCount < capacity` prior to reservation and rejects requests exceeding the threshold with HTTP 400.
+
+**Q2: How does the application handle CORS in production on Render?**  
+*Answer:* In production, Express is configured to serve both the compiled Vite React frontend (`client/dist`) and the API routes from the same origin. For cross-origin requests, `cors({ origin: true, credentials: true })` dynamically matches the incoming request origin, ensuring browser security headers without static whitelisting failures.
+
+**Q3: How are the 4-State UI requirements satisfied?**  
+*Answer:* Every view incorporates explicit component states:
+1. **Loading**: Centered spinning indicator (`LoadingSpinner.jsx`).
+2. **Success**: Formatted event cards, pass details, or roster table.
+3. **Empty**: Informative illustration and call-to-action button (`EmptyState.jsx`).
+4. **Error**: User-friendly alert banner with retry callback (`ErrorMessage.jsx`).
 
 ---
 
-## 8. Final Submission Checklist (ICTAK Section 13)
-
-- [x] Problem statement and MVP strictly defined and documented.
-- [x] Client (React 19 Vite) and Server (Express/Node) cleanly separated.
-- [x] Git repository initialized with strict `.gitignore` ignoring `.env` and `node_modules/`.
-- [x] `.env.example` templates committed in both client and server folders.
-- [x] Centralized API client (`services/api.js`) consuming `import.meta.env.VITE_API_URL`.
-- [x] Every screen supports 4 core states: Loading, Success, Empty, and Error.
-- [x] Complete RESTful API with status codes (200, 201, 400, 401, 403, 404, 409, 500).
-- [x] Ownership checks enforced on both server controllers and frontend UI.
-- [x] Automated test script included and verified.
-- [x] Student developer details (`Alen`, `alen225001@sahrdaya.ac.in`) included.
-
----
-
-## 9. Self-Review Questions (ICTAK Section 14)
-
-1. **Can I explain the problem my project solves and who it is for in two sentences?**  
-   *Yes: Campus Lost & Found eliminates chaotic lost-property communication at Sahrdaya College by providing a centralized digital portal where students and staff can log lost/found items and verify ownership with campus security through distinguishing proofs.*
-2. **Does the MVP work from start to finish without manual workarounds?**  
-   *Yes: A student can report an item, another student can find and claim it with proof, and security can approve the handover to complete the lifecycle.*
-3. **Can I trace one request from the React component to the database and back?**  
-   *Yes: Form submission in `CreateItem.jsx` calls `itemService.createItem()`, which sends a `POST /api/items` with Bearer JWT to Express. `authMiddleware` verifies the token, `itemController.createItem` validates inputs and saves to MongoDB via Mongoose `Item.create()`, returning 201 Created and JSON data back to React.*
-4. **What happens if the user enters bad input, loses internet, or the API fails?**  
-   *Forms have inline input validation; API errors return standardized `{ success: false, message: ... }` rendered gracefully in the UI; network drops display `<ErrorMessage />` with a 1-click retry button.*
-5. **Which data is protected, and how do I stop one user from reaching another user's data?**  
-   *Distinguishing marks and claim proofs are protected. Server-side authorization checks ensure only the item reporter and admin can view proof statements or approve handovers.*
-6. **Where are secrets stored?**  
-   *All secrets (`JWT_SECRET`, database URIs) reside strictly in `.env` files, which are excluded from Git via `.gitignore`.*
+**Developed with ❤️ by Alen (`alen225001@sahrdaya.ac.in`) for ICTAK Full Stack Development Evaluation.**

@@ -1,125 +1,98 @@
 import React from 'react';
-import { Shield, Phone, Mail, MapPin, Award } from 'lucide-react';
+import { Calendar, Heart, ShieldCheck, Mail, MapPin, Phone } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
-export const Footer = () => {
+const Footer = () => {
   return (
-    <footer
-      style={{
-        backgroundColor: '#0f172a',
-        color: '#94a3b8',
-        padding: '3.5rem 0 2rem',
-        marginTop: 'auto',
-        borderTop: '1px solid #1e293b',
-      }}
-    >
-      <div className="container">
-        <div
-          className="grid grid-cols-1 md:grid-cols-4"
-          style={{ gap: '2.5rem', marginBottom: '2.5rem' }}
-        >
-          {/* Column 1: College & Portal */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-              <div
-                style={{
-                  width: '2rem',
-                  height: '2rem',
-                  borderRadius: 'var(--radius-sm)',
-                  backgroundColor: 'var(--primary)',
-                  color: '#ffffff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Shield size={18} />
+    <footer className="bg-slate-900 text-slate-300 pt-12 pb-8 border-t border-slate-800">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+          {/* Brand & College info */}
+          <div className="md:col-span-2">
+            <div className="flex items-center gap-2.5 mb-3">
+              <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
+                <Calendar className="w-4 h-4" />
               </div>
-              <span style={{ fontWeight: 700, color: '#f8fafc', fontSize: '1rem' }}>
-                Campus Lost & Found
+              <span className="font-extrabold text-white text-lg tracking-tight">
+                Sahrdaya <span className="text-indigo-400">EventHub</span>
               </span>
             </div>
-            <p style={{ fontSize: '0.85rem', lineHeight: 1.6 }}>
-              A centralized digital lost property and verification system built specifically for Sahrdaya College campus community.
+            <p className="text-slate-400 text-sm leading-relaxed max-w-md mb-4">
+              Official campus event discovery and digital ticket reservation portal for Sahrdaya College of Engineering & Technology (SCET), Kodakara. Connecting students, clubs, and academic departments through seamless registrations and automated digital entry passes.
             </p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#38bdf8', fontSize: '0.8rem' }}>
-              <Award size={16} />
-              <span>ICT Academy of Kerala (ICTAK) Project</span>
+            <div className="space-y-1.5 text-xs text-slate-400">
+              <div className="flex items-center gap-2">
+                <MapPin className="w-3.5 h-3.5 text-indigo-400" />
+                <span>P.B. No. 12, Kodakara, Thrissur, Kerala - 680684</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Mail className="w-3.5 h-3.5 text-indigo-400" />
+                <span>events@sahrdaya.ac.in | alen225001@sahrdaya.ac.in</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Phone className="w-3.5 h-3.5 text-indigo-400" />
+                <span>+91 480 2726630 | Campus Reception Desk</span>
+              </div>
             </div>
           </div>
 
-          {/* Column 2: Campus Location */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <h4 style={{ color: '#f8fafc', fontWeight: 600, fontSize: '0.95rem' }}>
-              Campus Address
+          {/* Quick Links */}
+          <div>
+            <h4 className="text-white text-sm font-bold uppercase tracking-wider mb-3">
+              Quick Navigation
             </h4>
-            <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.85rem' }}>
-              <MapPin size={16} style={{ color: '#38bdf8', flexShrink: 0, marginTop: '3px' }} />
-              <span>
-                Sahrdaya College of Engineering & Technology<br />
-                P.B. No. 10, Kodakara, Thrissur<br />
-                Kerala, India - 680684
-              </span>
-            </div>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <Link to="/" className="hover:text-white transition">
+                  Explore Campus Events
+                </Link>
+              </li>
+              <li>
+                <Link to="/my-passes" className="hover:text-white transition">
+                  My Digital Passes
+                </Link>
+              </li>
+              <li>
+                <Link to="/events/create" className="hover:text-white transition">
+                  Host Club Event
+                </Link>
+              </li>
+              <li>
+                <Link to="/login" className="hover:text-white transition">
+                  Student Sign In
+                </Link>
+              </li>
+            </ul>
           </div>
 
-          {/* Column 3: Security & Support */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <h4 style={{ color: '#f8fafc', fontWeight: 600, fontSize: '0.95rem' }}>
-              Security & Handover Desks
+          {/* Academic & Viva Attribution */}
+          <div>
+            <h4 className="text-white text-sm font-bold uppercase tracking-wider mb-3">
+              Academic Project
             </h4>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem' }}>
-              <Phone size={16} style={{ color: '#10b981', flexShrink: 0 }} />
-              <span>Main Security Desk: +91 480 273 0333</span>
+            <div className="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700/60 text-xs space-y-2">
+              <div className="font-semibold text-indigo-300">
+                ICT Academy of Kerala (ICTAK)
+              </div>
+              <div className="text-slate-300">
+                Full Stack MERN Development Project
+              </div>
+              <div className="pt-2 border-t border-slate-700/60 text-[11px] text-slate-400">
+                Developed by: <span className="text-white font-medium">Alen</span>
+                <br />
+                ID: <span className="font-mono text-indigo-300">alen225001@sahrdaya.ac.in</span>
+              </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem' }}>
-              <Mail size={16} style={{ color: '#38bdf8', flexShrink: 0 }} />
-              <span>security@sahrdaya.ac.in</span>
-            </div>
-            <p style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.25rem' }}>
-              High-value items (laptops, jewelry, official IDs) are deposited directly at the Main Security Office.
-            </p>
-          </div>
-
-          {/* Column 4: Student Developer Details */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <h4 style={{ color: '#f8fafc', fontWeight: 600, fontSize: '0.95rem' }}>
-              Student Information
-            </h4>
-            <p style={{ fontSize: '0.85rem', color: '#e2e8f0', fontWeight: 600 }}>
-              Alen
-            </p>
-            <p style={{ fontSize: '0.825rem', color: '#94a3b8' }}>
-              Student ID: alen225001
-            </p>
-            <p style={{ fontSize: '0.825rem', color: '#38bdf8' }}>
-              alen225001@sahrdaya.ac.in
-            </p>
-            <p style={{ fontSize: '0.75rem', color: '#64748b' }}>
-              MERN Stack Full Stack Development Project
-            </p>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div
-          style={{
-            borderTop: '1px solid #1e293b',
-            paddingTop: '1.5rem',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '0.75rem',
-            fontSize: '0.8rem',
-            color: '#64748b',
-          }}
-          className="md:flex-row"
-        >
+        {/* Bottom copyright */}
+        <div className="pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-3">
           <div>
-            &copy; {new Date().getFullYear()} Campus Lost and Found - Sahrdaya College. All rights reserved.
+            &copy; {new Date().getFullYear()} Sahrdaya College of Engineering & Technology. All rights reserved.
           </div>
-          <div>
-            Built with React, Node.js, Express & MongoDB according to ICTAK Guidelines.
+          <div className="flex items-center gap-1">
+            <span>Built with MongoDB, Express, React & Node.js</span>
           </div>
         </div>
       </div>

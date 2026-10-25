@@ -1,9 +1,19 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Shield, UserPlus, AlertCircle } from 'lucide-react';
+import { Calendar, Lock, Mail, User, Phone, BookOpen, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-export const Register = () => {
+const DEPARTMENTS = [
+  'Computer Science & Engineering',
+  'Biomedical Engineering',
+  'Electronics & Communication Engineering',
+  'Biotechnology',
+  'Civil Engineering',
+  'Electrical & Electronics Engineering',
+  'Artificial Intelligence & Data Science',
+];
+
+const Register = () => {
   const navigate = useNavigate();
   const { register } = useAuth();
 
@@ -12,10 +22,10 @@ export const Register = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    department: 'Computer Science and Engineering',
-    studentId: '',
-    phone: '',
+    department: 'Computer Science & Engineering',
     role: 'student',
+    clubName: '',
+    phone: '',
   });
 
   const [loading, setLoading] = useState(false);
@@ -30,228 +40,212 @@ export const Register = () => {
     e.preventDefault();
     setError(null);
 
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long.');
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match.');
       return;
     }
 
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match. Please re-enter.');
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters.');
+      return;
+    }
+
+    if (formData.role === 'organizer' && !formData.clubName.trim()) {
+      setError('Please provide the name of your student club or chapter.');
       return;
     }
 
     setLoading(true);
-
     try {
       await register({
-        name: formData.name.trim(),
-        email: formData.email.trim(),
+        name: formData.name,
+        email: formData.email,
         password: formData.password,
         department: formData.department,
-        studentId: formData.studentId.trim(),
-        phone: formData.phone.trim(),
         role: formData.role,
+        clubName: formData.clubName,
+        phone: formData.phone || '+91 94000 00000',
       });
-      navigate('/dashboard');
+      navigate('/');
     } catch (err) {
-      setError(err.message || 'Registration failed. An account with this email may already exist.');
+      setError(err.message || 'Registration failed.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div
-      className="container"
-      style={{
-        padding: '3rem 1.25rem 5rem',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <div className="card" style={{ maxWidth: '540px', width: '100%', padding: '2.5rem' }}>
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <div
-            style={{
-              width: '3.25rem',
-              height: '3.25rem',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'var(--primary)',
-              color: '#ffffff',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto 1rem',
-            }}
-          >
-            <Shield size={28} />
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full mx-auto">
+        <div className="text-center mb-8">
+          <div className="w-12 h-12 bg-gradient-to-tr from-indigo-600 to-violet-500 rounded-2xl flex items-center justify-center text-white mx-auto mb-3 shadow-lg shadow-indigo-100">
+            <Calendar className="w-6 h-6" />
           </div>
-          <h1 style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--gray-900)', marginBottom: '0.35rem' }}>
-            Create Student / Staff Account
-          </h1>
-          <p style={{ fontSize: '0.875rem', color: 'var(--gray-500)' }}>
-            Join Sahrdaya Campus Lost and Found System
+          <h2 className="text-2xl font-black text-gray-900 tracking-tight">
+            Create Sahrdaya Account
+          </h2>
+          <p className="text-xs text-gray-500 mt-1">
+            Register to book admission passes and join campus tech fests
           </p>
         </div>
 
-        {error && (
-          <div
-            style={{
-              backgroundColor: 'var(--danger-bg)',
-              color: 'var(--danger)',
-              border: '1px solid var(--danger-border)',
-              padding: '0.85rem',
-              borderRadius: 'var(--radius-md)',
-              marginBottom: '1.5rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              fontSize: '0.875rem',
-            }}
-          >
-            <AlertCircle size={18} style={{ flexShrink: 0 }} />
-            <span>{error}</span>
-          </div>
-        )}
+        <div className="bg-white rounded-3xl border border-gray-200 shadow-sm p-6 sm:p-8">
+          {error && (
+            <div className="mb-5 p-3.5 bg-red-50 border border-red-200 rounded-xl flex items-center gap-2.5 text-red-700 text-xs">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label className="form-label" htmlFor="name">
-              Full Name *
-            </label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              className="form-input"
-              placeholder="e.g. Alen"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label" htmlFor="email">
-              College Email Address *
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              className="form-input"
-              placeholder="alen225001@sahrdaya.ac.in"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: '1rem' }}>
-            <div className="form-group">
-              <label className="form-label" htmlFor="password">
-                Password (min 6 chars) *
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
+                Full Name *
               </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                className="form-input"
-                placeholder="••••••••"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
+              <div className="relative">
+                <User className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Alen"
+                  required
+                  className="w-full pl-10 pr-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
             </div>
 
-            <div className="form-group">
-              <label className="form-label" htmlFor="confirmPassword">
-                Confirm Password *
+            <div>
+              <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
+                College Email *
               </label>
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                className="form-input"
-                placeholder="••••••••"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-              />
+              <div className="relative">
+                <Mail className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="alen225001@sahrdaya.ac.in"
+                  required
+                  className="w-full pl-10 pr-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
             </div>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: '1rem' }}>
-            <div className="form-group">
-              <label className="form-label" htmlFor="department">
-                Department *
+            <div>
+              <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
+                Academic Department *
               </label>
               <select
-                id="department"
                 name="department"
-                className="form-select"
                 value={formData.department}
                 onChange={handleChange}
-                required
+                className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
-                <option value="Computer Science and Engineering">Computer Science & Engg</option>
-                <option value="Biomedical Engineering">Biomedical Engineering</option>
-                <option value="Electronics & Communication">Electronics & Communication</option>
-                <option value="Civil Engineering">Civil Engineering</option>
-                <option value="Biotechnology">Biotechnology</option>
-                <option value="Electrical & Electronics">Electrical & Electronics</option>
-                <option value="Campus Administration / Security">Administration / Security</option>
+                {DEPARTMENTS.map((dept) => (
+                  <option key={dept} value={dept}>
+                    {dept}
+                  </option>
+                ))}
               </select>
             </div>
 
-            <div className="form-group">
-              <label className="form-label" htmlFor="studentId">
-                Student / Staff Roll ID
+            <div>
+              <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
+                Account Purpose / Role *
               </label>
-              <input
-                id="studentId"
-                name="studentId"
-                type="text"
-                className="form-input"
-                placeholder="e.g. alen225001"
-                value={formData.studentId}
-                onChange={handleChange}
-              />
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setFormData((p) => ({ ...p, role: 'student' }))}
+                  className={`py-2 px-3 rounded-xl text-xs font-bold border transition ${
+                    formData.role === 'student'
+                      ? 'bg-indigo-50 border-indigo-500 text-indigo-700 shadow-xs'
+                      : 'bg-gray-50 border-gray-200 text-gray-600'
+                  }`}
+                >
+                  Student (Attendee)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData((p) => ({ ...p, role: 'organizer' }))}
+                  className={`py-2 px-3 rounded-xl text-xs font-bold border transition ${
+                    formData.role === 'organizer'
+                      ? 'bg-indigo-50 border-indigo-500 text-indigo-700 shadow-xs'
+                      : 'bg-gray-50 border-gray-200 text-gray-600'
+                  }`}
+                >
+                  Club Organizer
+                </button>
+              </div>
             </div>
+
+            {formData.role === 'organizer' && (
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
+                  Student Club / Chapter Name *
+                </label>
+                <input
+                  type="text"
+                  name="clubName"
+                  value={formData.clubName}
+                  onChange={handleChange}
+                  placeholder="e.g. IEEE Sahrdaya SB / IEDC / CSI"
+                  required
+                  className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
+                  Password *
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="••••••"
+                  required
+                  className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
+                  Confirm *
+                </label>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  placeholder="••••••"
+                  required
+                  className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full mt-2 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl transition shadow-md shadow-indigo-100 disabled:opacity-50"
+            >
+              {loading ? 'Creating Account...' : 'Complete Registration'}
+            </button>
+          </form>
+
+          <div className="mt-6 pt-5 border-t border-gray-100 text-center text-xs text-gray-500">
+            Already have an account?{' '}
+            <Link to="/login" className="font-bold text-indigo-600 hover:text-indigo-800">
+              Sign In
+            </Link>
           </div>
-
-          <div className="form-group">
-            <label className="form-label" htmlFor="phone">
-              Contact Phone Number
-            </label>
-            <input
-              id="phone"
-              name="phone"
-              type="tel"
-              className="form-input"
-              placeholder="+91 98470 XXXXX"
-              value={formData.phone}
-              onChange={handleChange}
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn btn-primary"
-            style={{ width: '100%', padding: '0.75rem', marginTop: '0.5rem' }}
-          >
-            <UserPlus size={18} /> {loading ? 'Creating Account...' : 'Register for Campus Portal'}
-          </button>
-        </form>
-
-        <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.875rem', color: 'var(--gray-600)' }}>
-          Already registered?{' '}
-          <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 700 }}>
-            Sign In Here
-          </Link>
         </div>
       </div>
     </div>

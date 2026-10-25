@@ -4,7 +4,14 @@ import authService from '../services/authService';
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => authService.getCurrentUser());
+  const [user, setUser] = useState(() => {
+    try {
+      const savedUser = localStorage.getItem('sahrdaya_auth_user');
+      return savedUser && savedUser !== 'undefined' ? JSON.parse(savedUser) : null;
+    } catch {
+      return null;
+    }
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -14,10 +21,14 @@ export const AuthProvider = ({ children }) => {
       if (token) {
         try {
           const res = await authService.getProfile();
-          setUser(res.user);
+          if (res.user) {
+            setUser(res.user);
+            localStorage.setItem('sahrdaya_auth_user', JSON.stringify(res.user));
+          }
         } catch (err) {
           console.warn('[AuthContext] Session expired or invalid token:', err.message);
-          authService.logout();
+          localStorage.removeItem('sahrdaya_auth_token');
+          localStorage.removeItem('sahrdaya_auth_user');
           setUser(null);
         }
       }
@@ -27,11 +38,17 @@ export const AuthProvider = ({ children }) => {
     initAuth();
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (credentials) => {
     setError(null);
     try {
-      const res = await authService.login(email, password);
-      setUser(res.user);
+      const res = await authService.login(credentials);
+      if (res.token) {
+        localStorage.setItem('sahrdaya_auth_token', res.token);
+      }
+      if (res.user) {
+        localStorage.setItem('sahrdaya_auth_user', JSON.stringify(res.user));
+        setUser(res.user);
+      }
       return res;
     } catch (err) {
       setError(err.message);
@@ -43,7 +60,13 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     try {
       const res = await authService.register(userData);
-      setUser(res.user);
+      if (res.token) {
+        localStorage.setItem('sahrdaya_auth_token', res.token);
+      }
+      if (res.user) {
+        localStorage.setItem('sahrdaya_auth_user', JSON.stringify(res.user));
+        setUser(res.user);
+      }
       return res;
     } catch (err) {
       setError(err.message);
@@ -52,14 +75,19 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    authService.logout();
+    localStorage.removeItem('sahrdaya_auth_token');
+    localStorage.removeItem('sahrdaya_auth_user');
     setUser(null);
+    setError(null);
   };
 
   const updateProfile = async (data) => {
     try {
       const res = await authService.updateProfile(data);
-      setUser(res.user);
+      if (res.user) {
+        setUser(res.user);
+        localStorage.setItem('sahrdaya_auth_user', JSON.stringify(res.user));
+      }
       return res;
     } catch (err) {
       setError(err.message);
@@ -67,7 +95,8 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const isAdmin = user?.role === 'admin' || user?.role === 'security_staff';
+  const isOrganizer = user?.role === 'organizer' || user?.role === 'admin';
+  const isAdmin = user?.role === 'admin';
 
   return (
     <AuthContext.Provider
@@ -79,6 +108,7 @@ export const AuthProvider = ({ children }) => {
         register,
         logout,
         updateProfile,
+        isOrganizer,
         isAdmin,
       }}
     >

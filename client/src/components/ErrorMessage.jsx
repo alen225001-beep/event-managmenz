@@ -1,42 +1,24 @@
 import React from 'react';
-import { AlertCircle, RotateCcw } from 'lucide-react';
+import { AlertCircle, RefreshCw } from 'lucide-react';
 
-export const ErrorMessage = ({
-  message = 'An error occurred while loading data.',
+const ErrorMessage = ({
+  message = 'Failed to load event data. Please verify your network connection.',
   onRetry,
 }) => {
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '1rem 1.25rem',
-        backgroundColor: 'var(--danger-bg)',
-        border: '1px solid var(--danger-border)',
-        borderRadius: 'var(--radius-md)',
-        color: 'var(--danger)',
-        margin: '1.5rem 0',
-        gap: '1rem',
-      }}
-      role="alert"
-    >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-        <AlertCircle size={20} style={{ flexShrink: 0 }} />
-        <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{message}</span>
+    <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center max-w-lg mx-auto my-8">
+      <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-3">
+        <AlertCircle className="w-6 h-6" />
       </div>
+      <h4 className="text-base font-bold text-red-900 mb-1">Something went wrong</h4>
+      <p className="text-sm text-red-700 mb-4">{message}</p>
       {onRetry && (
         <button
           onClick={onRetry}
-          className="btn btn-sm"
-          style={{
-            backgroundColor: '#ffffff',
-            color: 'var(--danger)',
-            borderColor: 'var(--danger-border)',
-            flexShrink: 0,
-          }}
+          className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white text-xs font-semibold rounded-lg hover:bg-red-700 transition"
         >
-          <RotateCcw size={14} /> Retry
+          <RefreshCw className="w-3.5 h-3.5" />
+          Retry Request
         </button>
       )}
     </div>
