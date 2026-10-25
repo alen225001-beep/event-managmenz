@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Calendar, Lock, Mail, AlertCircle, Sparkles, ShieldCheck } from 'lucide-react';
+import { Calendar, Lock, Mail, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
@@ -30,12 +30,6 @@ const Login = () => {
     }
   };
 
-  const handleDemoFill = (demoEmail, demoPassword) => {
-    setEmail(demoEmail);
-    setPassword(demoPassword);
-    setError(null);
-  };
-
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full mx-auto">
@@ -50,37 +44,6 @@ const Login = () => {
           <p className="text-xs text-gray-500 mt-1">
             Access your student passes and registered campus workshops
           </p>
-        </div>
-
-        {/* Demo Accounts Box for Viva Evaluators */}
-        <div className="bg-indigo-50/70 border border-indigo-100 rounded-2xl p-4 mb-6">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-700 mb-2">
-            <Sparkles className="w-4 h-4 text-amber-500" />
-            <span>1-Click Demo Accounts (Viva & Evaluation)</span>
-          </div>
-          <div className="grid grid-cols-3 gap-2">
-            <button
-              type="button"
-              onClick={() => handleDemoFill('alen225001@sahrdaya.ac.in', 'password123')}
-              className="px-2.5 py-1.5 bg-white hover:bg-indigo-50 text-indigo-800 rounded-xl text-[11px] font-bold border border-indigo-200 transition shadow-xs text-center"
-            >
-              Alen (Organizer)
-            </button>
-            <button
-              type="button"
-              onClick={() => handleDemoFill('admin@sahrdaya.ac.in', 'password123')}
-              className="px-2.5 py-1.5 bg-white hover:bg-purple-50 text-purple-800 rounded-xl text-[11px] font-bold border border-purple-200 transition shadow-xs text-center"
-            >
-              Admin Dean
-            </button>
-            <button
-              type="button"
-              onClick={() => handleDemoFill('anjali@sahrdaya.ac.in', 'password123')}
-              className="px-2.5 py-1.5 bg-white hover:bg-sky-50 text-sky-800 rounded-xl text-[11px] font-bold border border-sky-200 transition shadow-xs text-center"
-            >
-              Student (Anjali)
-            </button>
-          </div>
         </div>
 
         {/* Login Form */}
