@@ -24,7 +24,7 @@ const registrationSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['confirmed', 'attended', 'cancelled'],
+      enum: ['confirmed', 'attended', 'cancelled', 'pending_payment'],
       default: 'confirmed',
       index: true,
     },
@@ -47,6 +47,33 @@ const registrationSchema = new mongoose.Schema(
     phone: {
       type: String,
       default: '',
+    },
+    // Payment details (Section 6.5)
+    isPaid: {
+      type: Boolean,
+      default: false,
+    },
+    paymentAmount: {
+      type: Number,
+      default: 0,
+    },
+    paymentId: {
+      type: String,
+      default: '',
+      trim: true,
+    },
+    paymentMethod: {
+      type: String,
+      default: 'Free',
+      enum: ['Free', 'UPI / QR', 'Debit/Credit Card', 'Net Banking', 'Campus Wallet'],
+    },
+    paymentStatus: {
+      type: String,
+      enum: ['not_applicable', 'pending', 'completed', 'failed', 'refunded'],
+      default: 'not_applicable',
+    },
+    paymentDate: {
+      type: Date,
     },
     registeredAt: {
       type: Date,

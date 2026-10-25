@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, MapPin, Clock, Users, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { WhatsAppShareButton } from './ShareButtons';
 
 const categoryColors = {
   'Technical Workshop': 'bg-blue-100 text-blue-800 border-blue-200',
@@ -19,11 +20,14 @@ const EventCard = ({ event }) => {
   const day = eventDate.getDate();
 
   const isSoldOut = event.registeredCount >= event.capacity;
+  const isPaid = event.ticketType === 'paid' && Number(event.price) > 0;
   const spotsLeft = Math.max(0, event.capacity - event.registeredCount);
   const percentFilled = Math.min(100, Math.round((event.registeredCount / event.capacity) * 100));
 
   const categoryBadgeClass =
     categoryColors[event.category] || 'bg-gray-100 text-gray-800 border-gray-200';
+
+  const eventUrl = typeof window !== 'undefined' ? `${window.location.origin}/events/${event._id}` : `/events/${event._id}`;
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 flex flex-col group">
@@ -52,6 +56,10 @@ const EventCard = ({ event }) => {
           {isSoldOut ? (
             <span className="text-[11px] font-black bg-red-600 text-white px-2 py-0.5 rounded-md uppercase tracking-wider shadow">
               Sold Out
+            </span>
+          ) : isPaid ? (
+            <span className="text-[11px] font-black bg-amber-500 text-slate-900 px-2.5 py-0.5 rounded-md uppercase tracking-wider shadow border border-amber-300">
+              ₹{event.price} Entry
             </span>
           ) : (
             <span className="text-[11px] font-bold bg-emerald-600 text-white px-2 py-0.5 rounded-md uppercase tracking-wider shadow">
@@ -116,18 +124,28 @@ const EventCard = ({ event }) => {
           </div>
         </div>
 
-        {/* Action Button */}
-        <Link
-          to={`/events/${event._id}`}
-          className={`mt-4 w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold transition shadow-sm ${
-            isSoldOut
-              ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-100'
-          }`}
-        >
-          {isSoldOut ? 'View Event Details' : 'Book Free Entry Pass'}
-          <ArrowRight className="w-3.5 h-3.5" />
-        </Link>
+        {/* Action Buttons: View Details + WhatsApp Share */}
+        <div className="mt-4 flex items-center gap-2">
+          <Link
+            to={`/events/${event._id}`}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold transition shadow-sm ${
+              isSoldOut
+                ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                : isPaid
+                ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-100'
+                : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-100'
+            }`}
+          >
+            {isSoldOut ? 'View Event Details' : isPaid ? `Book Pass (₹${event.price})` : 'Book Free Pass'}
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+
+          <WhatsAppShareButton
+            event={event}
+            url={eventUrl}
+            variant="icon"
+          />
+        </div>
       </div>
     </div>
   );

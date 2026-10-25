@@ -86,7 +86,7 @@ const events = [
   {
     title: 'Hands-on Workshop: Deep Learning with PyTorch & Generative AI',
     description:
-      'A full-day intensive hands-on masterclass for engineering students. Learn convolutional neural networks, transformer architectures, and fine-tuning open-source LLMs using Google Colab GPUs. Bring your laptops!',
+      'A full-day intensive hands-on masterclass for engineering students. Learn convolutional neural networks, transformer architectures, and fine-tuning open-source LLMs using Google Colab GPUs. Includes printed certificates and GPU compute vouchers.',
     category: 'Technical Workshop',
     venue: 'Central Computing Facility - Lab 3',
     date: getFutureDate(5),
@@ -97,8 +97,8 @@ const events = [
     bannerImage:
       'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80',
     clubName: 'CSI Student Chapter',
-    ticketType: 'free',
-    price: 0,
+    ticketType: 'paid',
+    price: 199,
     tags: ['pytorch', 'generative-ai', 'deep-learning', 'python', 'hands-on'],
     contactEmail: 'alen225001@sahrdaya.ac.in',
     contactPhone: '+91 98470 12345',
@@ -107,7 +107,7 @@ const events = [
   {
     title: 'Sargam ’26: Annual Inter-Department Cultural Gala',
     description:
-      'The biggest cultural festival of Sahrdaya College! Featuring eastern & western musical band face-offs, synchronized group dance battles, mime, theatrical skits, and celebrity musical night. Don’t miss your entry pass!',
+      'The biggest cultural festival of Sahrdaya College! Featuring eastern & western musical band face-offs, synchronized group dance battles, mime, theatrical skits, and celebrity musical night. VIP pass includes front-row stage seating and evening refreshment pass.',
     category: 'Cultural Fest',
     venue: 'College Main Open Air Auditorium',
     date: getFutureDate(18),
@@ -118,8 +118,8 @@ const events = [
     bannerImage:
       'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80',
     clubName: 'Sahrdaya Arts Council',
-    ticketType: 'free',
-    price: 0,
+    ticketType: 'paid',
+    price: 250,
     tags: ['cultural', 'music', 'dance', 'sargam', 'celebrity-night'],
     contactEmail: 'events@sahrdaya.ac.in',
     contactPhone: '+91 94471 22334',
@@ -128,7 +128,7 @@ const events = [
   {
     title: 'National Seminar: Brain-Computer Interfaces & Neural Prosthetics',
     description:
-      'Distinguished guest lecture and technical symposium organized by the Department of Biomedical Engineering. Keynote address by Dr. K. Radhakrishnan, leading neural engineering researcher. Includes scientific poster presentation sessions.',
+      'Distinguished guest lecture and technical symposium organized by the Department of Biomedical Engineering. Keynote address by leading neural engineering researchers. Includes scientific poster presentation sessions.',
     category: 'National Seminar',
     venue: 'BME Seminar Hall, Biotech Block',
     date: getFutureDate(9),
@@ -170,7 +170,7 @@ const events = [
   {
     title: 'All-Kerala Inter-Collegiate 3x3 Basketball Championship',
     description:
-      'High-octane tournament featuring the top collegiate basketball teams from KTU affiliated engineering colleges. Trophies, medals, and certificates for all finalists. Come cheer for Sahrdaya Titans!',
+      'High-octane tournament featuring the top collegiate basketball teams from KTU affiliated engineering colleges. Trophies, medals, and certificates for all finalists. Ticket includes team kit and energy drinks.',
     category: 'Sports Tournament',
     venue: 'Indoor Sports Complex & Gymnasium',
     date: getFutureDate(14),
@@ -181,8 +181,8 @@ const events = [
     bannerImage:
       'https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=1200&q=80',
     clubName: 'Sahrdaya Physical Education Department',
-    ticketType: 'free',
-    price: 0,
+    ticketType: 'paid',
+    price: 150,
     tags: ['sports', 'basketball', 'tournament', 'fitness', 'ktu'],
     contactEmail: 'sports@sahrdaya.ac.in',
     contactPhone: '+91 94471 22334',

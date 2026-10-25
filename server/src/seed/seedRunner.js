@@ -42,7 +42,7 @@ const runSeed = async () => {
     const anjaliUser = createdUsers.find((u) => u.email === 'anjali@sahrdaya.ac.in');
     const rahulUser = createdUsers.find((u) => u.email === 'rahul@sahrdaya.ac.in');
 
-    console.log('[Seed] Seeding campus events...');
+    console.log('[Seed] Seeding campus events (Mix of Free & Paid)...');
     const createdEvents = [];
     for (let i = 0; i < events.length; i++) {
       const e = events[i];
@@ -56,8 +56,8 @@ const runSeed = async () => {
     }
     console.log(`✅ ${createdEvents.length} campus events created.`);
 
-    console.log('[Seed] Creating sample digital entry passes...');
-    // Anjali registers for TechNovus Hackathon & PyTorch Workshop
+    console.log('[Seed] Creating sample digital entry passes with payment records...');
+    // Anjali registers for TechNovus Hackathon (Free) & PyTorch Workshop (Paid ₹199)
     const pass1 = await Registration.create({
       event: createdEvents[0]._id,
       user: anjaliUser._id,
@@ -68,6 +68,10 @@ const runSeed = async () => {
       studentId: anjaliUser.studentId,
       phone: anjaliUser.phone,
       status: 'confirmed',
+      isPaid: false,
+      paymentAmount: 0,
+      paymentStatus: 'not_applicable',
+      paymentMethod: 'Free',
     });
 
     const pass2 = await Registration.create({
@@ -81,9 +85,15 @@ const runSeed = async () => {
       phone: anjaliUser.phone,
       status: 'attended',
       attendedAt: new Date(),
+      isPaid: true,
+      paymentAmount: 199,
+      paymentId: 'SHR-PAY-492019',
+      paymentMethod: 'UPI / QR',
+      paymentStatus: 'completed',
+      paymentDate: new Date(),
     });
 
-    // Rahul registers for BME Seminar & Sargam Cultural Fest
+    // Rahul registers for BME Seminar (Free) & Sargam Cultural Fest (Paid ₹250)
     const pass3 = await Registration.create({
       event: createdEvents[3]._id,
       user: rahulUser._id,
@@ -94,6 +104,10 @@ const runSeed = async () => {
       studentId: rahulUser.studentId,
       phone: rahulUser.phone,
       status: 'confirmed',
+      isPaid: false,
+      paymentAmount: 0,
+      paymentStatus: 'not_applicable',
+      paymentMethod: 'Free',
     });
 
     const pass4 = await Registration.create({
@@ -106,6 +120,12 @@ const runSeed = async () => {
       studentId: rahulUser.studentId,
       phone: rahulUser.phone,
       status: 'confirmed',
+      isPaid: true,
+      paymentAmount: 250,
+      paymentId: 'SHR-PAY-882104',
+      paymentMethod: 'Debit/Credit Card',
+      paymentStatus: 'completed',
+      paymentDate: new Date(),
     });
 
     console.log('✅ Sample passes seeded successfully.\n');

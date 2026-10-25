@@ -75,7 +75,7 @@ const runTests = async () => {
     assert.ok(loginData.token, 'Login should return token');
     console.log('✅ Passed: Authentication succeeds with correct password');
 
-    // Test 4: Organizer Registration & Create Event
+    // Test 4: Organizer Registration & Create Free Event
     console.log('\n[Test 4] POST /api/events (Organizer publishes new campus workshop)');
     const orgRes = await fetch(`${BASE_URL}/api/auth/register`, {
       method: 'POST',
@@ -113,6 +113,8 @@ const runTests = async () => {
         registrationDeadline: deadline,
         capacity: 50,
         clubName: 'IEEE Sahrdaya SB',
+        ticketType: 'free',
+        price: 0,
       }),
     });
     assert.strictEqual(createEventRes.status, 201, 'Event creation should return 201');
@@ -120,8 +122,8 @@ const runTests = async () => {
     const testEventId = eventData.event._id;
     console.log('✅ Passed: Organizer successfully created event');
 
-    // Test 5: Student Registers for Event & Receives Digital Pass
-    console.log('\n[Test 5] POST /api/registrations/:eventId (Student books pass)');
+    // Test 5: Student Registers for Free Event & Receives Digital Pass
+    console.log('\n[Test 5] POST /api/registrations/:eventId (Student books free pass)');
     const bookRes = await fetch(`${BASE_URL}/api/registrations/${testEventId}`, {
       method: 'POST',
       headers: {
@@ -134,7 +136,7 @@ const runTests = async () => {
     const bookData = await bookRes.json();
     assert.ok(bookData.registration.ticketCode.startsWith('SHR-EVT-'), 'Ticket code should have SHR-EVT- prefix');
     const passId = bookData.registration._id;
-    console.log(`✅ Passed: Ticket pass issued successfully (${bookData.registration.ticketCode})`);
+    console.log(`✅ Passed: Free ticket pass issued successfully (${bookData.registration.ticketCode})`);
 
     // Test 6: Duplicate Registration Check
     console.log('\n[Test 6] Duplicate Registration Prevention');
@@ -170,13 +172,59 @@ const runTests = async () => {
     assert.strictEqual(checkinData.pass.status, 'attended');
     console.log('✅ Passed: Attendee checked in successfully');
 
+    // Test 9: Paid Event Registration & Payment Verification
+    console.log('\n[Test 9] Paid Event Workflow & Payment Portal Gateway');
+    // Create paid event (₹250)
+    const paidEventRes = await fetch(`${BASE_URL}/api/events`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${organizerToken}`,
+      },
+      body: JSON.stringify({
+        title: '[TEST] Robotics Masterclass VIP Pass',
+        description: 'Advanced robotics hands-on masterclass with hardware kit.',
+        category: 'Technical Workshop',
+        venue: 'Mechatronics Lab',
+        date: eventDate,
+        time: '10:00 AM - 05:00 PM',
+        registrationDeadline: deadline,
+        capacity: 30,
+        clubName: 'IEEE Robotics Chapter',
+        ticketType: 'paid',
+        price: 250,
+      }),
+    });
+    const paidEventData = await paidEventRes.json();
+    const paidEventId = paidEventData.event._id;
+
+    // Student registers for paid event WITH payment details
+    const payBookingRes = await fetch(`${BASE_URL}/api/registrations/${paidEventId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${studentToken}`,
+      },
+      body: JSON.stringify({
+        paymentMethod: 'UPI / QR',
+        paymentId: 'SHR-PAY-TEST999',
+      }),
+    });
+    assert.strictEqual(payBookingRes.status, 201, 'Paid registration should return 201');
+    const payBookingData = await payBookingRes.json();
+    assert.strictEqual(payBookingData.registration.status, 'confirmed', 'Ticket should be confirmed after payment');
+    assert.strictEqual(payBookingData.registration.isPaid, true, 'isPaid should be true');
+    assert.strictEqual(payBookingData.registration.paymentAmount, 250, 'Amount should match event price');
+    assert.strictEqual(payBookingData.registration.paymentId, 'SHR-PAY-TEST999');
+    console.log('✅ Passed: Paid event requires payment and ticket confirms with transaction ID');
+
     // Clean up test records
     await User.deleteMany({ email: /test.*@sahrdaya\.ac\.in/ });
     await Event.deleteMany({ title: /\[TEST\]/ });
     await Registration.deleteMany({ studentEmail: /test.*@sahrdaya\.ac\.in/ });
 
     console.log('\n======================================================');
-    console.log('🎉 ALL 8 TEST SUITES PASSED FLAWLESSLY!');
+    console.log('🎉 ALL 9 TEST SUITES (INCLUDING PAYMENT PORTAL) PASSED!');
     console.log('======================================================\n');
 
     server.close();
